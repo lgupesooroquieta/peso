@@ -1,0 +1,127 @@
+/**
+ * Vercel Serverless Function: /api/sendNotification
+ *
+ * Keeps OneSignal REST API key server-side (do NOT expose in frontend JS).
+ *
+ * Configure these environment variables in Vercel:
+ * - ONESIGNAL_REST_API_KEY  (secret)
+ * - ONESIGNAL_APP_ID       (public, but fine to keep here too)
+ *
+ * Request (POST JSON):
+ * {
+ *   "event": "announcement_added",
+ *   "title": "Title",
+ *   "message": "New announcement: Title",
+ *   "announcementId": "<firestoreDocId>",
+ *   "targetIntent": "job"|"scholarship"|"both",
+ *   "category": "PESO UPDATE"
+ * }
+ */
+
+const ONESIGNAL_CREATE_URL = "https://api.onesignal.com/notifications";
+
+function toStr(v) {
+  return typeof v === "string" ? v : v == null ? "" : String(v);
+}
+
+function buildPayload({ appId, title, message, announcementId, targetIntent, category }) {
+  const intent = toStr(targetIntent).trim().toLowerCase();
+  const headings = { en: toStr(category).trim() || "Announcement" };
+  const contents = {
+    en: toStr(message).trim() || toStr(title).trim() || "You have a new announcement.",
+  };
+
+  const payload = {
+    app_id: appId,
+    target_channel: "push",
+    headings,
+    contents,
+    custom_data: {
+      announcementId: toStr(announcementId).trim(),
+      targetIntent: intent || "both",
+    },
+    // Custom sound names
+    android_sound: "notification_sound",
+    ios_sound: "notification_sound.wav",
+  };
+
+  // Targeting by OneSignal tag "intent" (set by the Flutter app on login).
+  if (intent && intent !== "both") {
+    payload.filters = [
+      { field: "tag", key: "intent", relation: "=", value: intent },
+      { operator: "OR" },
+      { field: "tag", key: "intent", relation: "=", value: "both" },
+    ];
+  } else {
+    payload.included_segments = ["All Subscribers"];
+  }
+
+  return payload;
+}
+
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+
+  if (req.method !== "POST") {
+    res.status(405).json({ ok: false, error: "Method not allowed" });
+    return;
+  }
+
+  const restApiKey = toStr(process.env.ONESIGNAL_REST_API_KEY).trim();
+  const appId = toStr(process.env.ONESIGNAL_APP_ID).trim();
+
+  if (!restApiKey) {
+    res.status(500).json({ ok: false, error: "Missing env ONESIGNAL_REST_API_KEY" });
+    return;
+  }
+  if (!appId) {
+    res.status(500).json({ ok: false, error: "Missing env ONESIGNAL_APP_ID" });
+    return;
+  }
+
+  try {
+    const body = req.body || {};
+    const event = toStr(body.event).trim();
+    if (!event) {
+      res.status(400).json({ ok: false, error: "Missing event" });
+      return;
+    }
+
+    const payload = buildPayload({
+      appId,
+      title: body.title,
+      message: body.message,
+      announcementId: body.announcementId,
+      targetIntent: body.targetIntent,
+      category: body.category,
+    });
+
+    const r = await fetch(ONESIGNAL_CREATE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Key ${restApiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await r.text();
+    if (!r.ok) {
+      res.status(r.status).json({ ok: false, status: r.status, response: text });
+      return;
+    }
+
+    res.status(200).json({ ok: true, status: r.status, response: text });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+}
+

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Scholarship Applicants | PESO</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/job_applicants/job-applicants.css" />
+    <link
+      rel="stylesheet"
+      href="/css/scholarship_applied/scholarship-applied.css"
+    />
+    <link rel="stylesheet" href="/css/responsive-tables.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div
+      id="loadingContainer"
+      class="loading-overlay"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div class="loading-lottie"></div>
+      <p class="loading-text">Loading scholarship applicants...</p>
+    </div>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/announcements/announcements.html"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu open">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        class="active"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/job_applicants/job_applicants.html"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger"
+              ><i class="fas fa-sign-out-alt"></i><span> Exit</span></a
+            >
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="main-content px-4">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="container" style="max-width: 100%; padding: 0">
+            <div class="page-header">
+              <h1>Scholarship Applicants</h1>
+              <p>
+                View all scholarship applications and see separate tables for
+                accepted, pending, renewal, and more.
+              </p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <!-- Top Section: Search, Level, Time, Add scholar | then Status/Type filters -->
+            <div class="scholarship-top-section">
+              <div class="scholarship-top-row scholarship-top-search-row">
+                <div class="search-wrapper">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="searchBox"
+                    class="search-input"
+                    placeholder="Search scholar name, email, scholarship type..."
+                  />
+                </div>
+                <div class="scholarship-top-right">
+                  <div class="scholarship-level-wrapper">
+                    <div class="date-filter-group level-filter-group">
+                      <div class="custom-dropdown" id="scholarLevelDropdown">
+                        <div class="dropdown-selected">
+                          <span id="scholarLevelSelectedLabel">All levels</span>
+                          <i
+                            class="fas fa-chevron-down ms-2"
+                            style="font-size: 10px"
+                          ></i>
+                        </div>
+                        <ul class="dropdown-options">
+                          <li data-value="" class="active">All levels</li>
+                          <li data-value="JHS">JHS</li>
+                          <li data-value="SHS">SHS</li>
+                          <li data-value="College">College</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <input type="hidden" id="scholarLevelFilter" value="" />
+                    <input type="hidden" id="scholarStatusFilter" value="" />
+                  </div>
+                  <div class="date-filter-group scholarship-date-inline">
+                    <i class="fas fa-tags"></i>
+                    <div class="custom-dropdown" id="scholarTypeDropdown">
+                      <div class="dropdown-selected">
+                        <span id="scholarTypeSelectedLabel">All</span>
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="" class="active">All</li>
+                      </ul>
+                    </div>
+                    <input type="hidden" id="scholarTypeFilter" value="" />
+                  </div>
+                  <div class="date-filter-group scholarship-date-inline">
+                    <i class="far fa-calendar-alt"></i>
+                    <div class="custom-dropdown" id="scholarDateDropdown">
+                      <div class="dropdown-selected">
+                        <span id="scholarCurrentDateFilter">All Time</span>
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="all" class="active">All Time</li>
+                        <li data-value="week">This Week</li>
+                        <li data-value="month">This Month</li>
+                        <li data-value="year">This Year</li>
+                        <li data-value="custom">Custom Date Range</li>
+                      </ul>
+                    </div>
+                    <input
+                      type="hidden"
+                      id="scholarFilterDateRange"
+                      value="all"
+                    />
+                    <div
+                      id="scholarCustomDateInputs"
+                      class="custom-date-container hidden"
+                    >
+                      <input
+                        type="date"
+                        id="scholarDateFrom"
+                        class="date-input-small"
+                      />
+                      <span>-</span>
+                      <input
+                        type="date"
+                        id="scholarDateTo"
+                        class="date-input-small"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-indigo scholarship-add-btn"
+                    id="scholarAddBtn"
+                    aria-label="Add scholar"
+                  >
+                    <i class="fas fa-plus me-2"></i>Add scholar
+                  </button>
+                </div>
+              </div>
+
+              <div class="scholarship-top-row scholarship-top-filters-row">
+                <div
+                  class="scholarship-filters-row scholarship-filters-single-row"
+                >
+                  <span class="scholarship-filter-th">Status</span>
+                  <div
+                    class="scholarship-filter-cells"
+                    id="scholarStatusPills"
+                    role="group"
+                    aria-label="Filter by status"
+                  >
+                    <button
+                      type="button"
+                      class="scholarship-filter-cell active"
+                      data-value=""
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      class="scholarship-filter-cell"
+                      data-value="Pending"
+                    >
+                      Pending
+                    </button>
+                    <button
+                      type="button"
+                      class="scholarship-filter-cell"
+                      data-value="Accepted"
+                    >
+                      Approved
+                    </button>
+                    <button
+                      type="button"
+                      class="scholarship-filter-cell"
+                      data-value="Renewal"
+                    >
+                      Renewal
+                    </button>
+                    <button
+                      type="button"
+                      class="scholarship-filter-cell"
+                      data-value="Declined"
+                    >
+                      Declined
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="resultsContainer" style="display: none">
+              <div class="table-container">
+                <div class="table-scroll-wrapper">
+                  <table class="scholarship-table" id="scholarshipAppliedTable">
+                    <thead>
+                      <tr>
+                        <th>Scholar</th>
+                        <th>Scholarship Type</th>
+                        <th>Applied Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="scholarshipAppliedTableBody"></tbody>
+                  </table>
+                </div>
+
+                <div class="table-footer">
+                  <span class="table-footer-count">
+                    Showing <span id="filteredCount">0</span> of
+                    <span id="totalCountFooter">0</span> application(s)
+                  </span>
+                  <div class="table-pagination">
+                    <span
+                      role="button"
+                      tabindex="0"
+                      id="paginationPrev"
+                      class="pagination-link"
+                      aria-disabled="true"
+                    >
+                      <i class="fas fa-chevron-left"></i> Prev
+                    </span>
+                    <span id="paginationLabel" class="pagination-label"
+                      >Page 1 of 1</span
+                    >
+                    <span
+                      role="button"
+                      tabindex="0"
+                      id="paginationNext"
+                      class="pagination-link"
+                      aria-disabled="true"
+                    >
+                      Next <i class="fas fa-chevron-right"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Scholarship Applicant Modal -->
+    <div
+      id="scholarshipInfoModal"
+      class="applicant-info-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="applicant-info-modal-box" style="max-width: 980px">
+        <div class="applicant-info-modal-header">
+          <div class="applicant-info-header-left">
+            <div>
+              <h2 class="applicant-info-name" id="modalScholarName">—</h2>
+              <p class="applicant-info-email" id="modalScholarEmail">—</p>
+              <span
+                class="applicant-info-status-badge"
+                id="modalScholarStatusBadge"
+              ></span>
+              <span
+                class="applicant-info-program-badge"
+                id="modalScholarTypeBadge"
+              ></span>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="applicant-info-modal-close js-close-scholarship-modal"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="applicant-info-modal-body">
+          <div id="scholarshipInfoModalContent" style="display: none">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px 28px;
+              "
+              id="modalScholarDetailsGrid"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/toast.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script
+      type="module"
+      src="/js/scholarship_applied/scholarship_applied_list.js"
+    ></script>
+  </body>
+</html>

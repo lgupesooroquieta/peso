@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Programs | PESO</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/programs/programs.css" />
+    <link rel="stylesheet" href="/css/job_applicants/job-applicants.css" />
+    <link rel="stylesheet" href="/css/responsive-tables.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div
+      id="loadingContainer"
+      class="loading-overlay"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div class="loading-lottie"></div>
+      <p class="loading-text">Loading programs...</p>
+    </div>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/announcements/announcements.html"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html" class="active"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/job_applicants/job_applicants.html"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger"
+              ><i class="fas fa-sign-out-alt"></i><span> Exit</span></a
+            >
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="main-content px-4">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="container" style="max-width: 100%; padding: 0">
+            <div class="page-header">
+              <h1>Programs</h1>
+              <p>
+                View all posted programs and track the number of applicants for
+                each program.
+              </p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <div class="search-wrapper search-wrapper-narrow">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="searchBox"
+                    class="search-input"
+                    placeholder="Search programs..."
+                  />
+                </div>
+              </div>
+              <div class="toolbar-right">
+                <div class="date-filter-group program-type-filter-group">
+                  <i class="fas fa-filter"></i>
+                  <div class="custom-dropdown" id="programTypeDropdown">
+                    <div class="dropdown-selected">
+                      <span id="programTypeSelectedLabel">All types</span>
+                      <i
+                        class="fas fa-chevron-down ms-2"
+                        style="font-size: 10px"
+                      ></i>
+                    </div>
+                    <ul class="dropdown-options">
+                      <li data-value="" class="active">All types</li>
+                      <li data-value="SPES">SPES</li>
+                      <li data-value="GIP">GIP</li>
+                      <li data-value="TUPAD">TUPAD</li>
+                      <li data-value="JobStart">JobStart</li>
+                      <li data-value="Other">Other</li>
+                    </ul>
+                  </div>
+                  <input type="hidden" id="programTypeFilter" value="" />
+                </div>
+
+                <div class="date-filter-group">
+                  <i class="far fa-calendar-alt"></i>
+                  <div class="custom-dropdown" id="programsDateDropdown">
+                    <div class="dropdown-selected">
+                      <span id="programsCurrentDateFilter">All Time</span>
+                      <i
+                        class="fas fa-chevron-down ms-2"
+                        style="font-size: 10px"
+                      ></i>
+                    </div>
+                    <ul class="dropdown-options">
+                      <li data-value="all" class="active">All Time</li>
+                      <li data-value="week">This Week</li>
+                      <li data-value="month">This Month</li>
+                      <li data-value="year">This Year</li>
+                      <li data-value="custom">Custom Date Range</li>
+                    </ul>
+                  </div>
+                  <input
+                    type="hidden"
+                    id="programsFilterDateRange"
+                    value="all"
+                  />
+                  <div
+                    id="programsCustomDateInputs"
+                    class="custom-date-container hidden"
+                  >
+                    <input
+                      type="date"
+                      id="programsDateFrom"
+                      class="date-input-small"
+                    />
+                    <span>-</span>
+                    <input
+                      type="date"
+                      id="programsDateTo"
+                      class="date-input-small"
+                    />
+                  </div>
+                </div>
+                <div class="action-buttons">
+                  <button
+                    type="button"
+                    id="openAddJobModalBtn"
+                    class="btn btn-indigo"
+                  >
+                    <i class="fas fa-plus"></i> Add Program
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="status-tabs-container">
+              <div class="applicants-filters-single-row">
+                <span class="applicant-filter-th">Status</span>
+                <div class="applicant-filter-cells" id="statusTabs">
+                  <button
+                    type="button"
+                    class="applicant-filter-cell active"
+                    data-status="all"
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    class="applicant-filter-cell"
+                    data-status="active"
+                  >
+                    Active
+                  </button>
+                  <button
+                    type="button"
+                    class="applicant-filter-cell"
+                    data-status="closed"
+                  >
+                    Closed
+                  </button>
+                </div>
+              </div>
+              <input type="hidden" id="programsStatusFilter" value="all" />
+            </div>
+
+            <div class="table-container">
+              <div class="table-scroll-wrapper">
+                <table
+                  id="programsTable"
+                  class="programs-table"
+                  style="display: none"
+                >
+                  <thead>
+                    <tr>
+                      <th style="text-align: start">Program</th>
+                      <th style="text-align: center">Type</th>
+                      <th style="text-align: center">Deadline</th>
+                      <th style="text-align: center">Applicants</th>
+                      <th style="text-align: center">Status</th>
+                      <th style="text-align: center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="programsTableBody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer">
+                <span class="table-footer-count">
+                  Showing <span id="filteredCount">0</span> of
+                  <span id="totalCount">0</span> programs
+                </span>
+                <div class="table-pagination">
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="programsPaginationPrev"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    <i class="fas fa-chevron-left"></i> Prev
+                  </span>
+                  <span id="programsPaginationLabel" class="pagination-label"
+                    >Page 1 of 1</span
+                  >
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="programsPaginationNext"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    Next <i class="fas fa-chevron-right"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="viewProgramModal"
+      class="announcement-view-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="announcement-view-modal-box">
+        <div class="announcement-view-modal-content">
+          <button
+            type="button"
+            class="announcement-view-modal-close top-right"
+            id="viewProgramModalClose"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+          <div id="viewProgramContent" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="addJobModal" class="add-job-modal-overlay" aria-hidden="true">
+      <div class="add-job-modal-box add-job-modal add-program-modal-box">
+        <div class="add-job-modal-header">
+          <h2 id="addJobModalTitle">
+            <i class="fas fa-briefcase" style="margin-right: 8px"></i> Add
+            Program
+          </h2>
+          <div class="add-job-modal-header-actions">
+            <button
+              type="button"
+              class="add-job-modal-clear-btn"
+              id="addJobClearBtn"
+              aria-label="Clear form"
+            >
+              <i class="far fa-trash-alt"></i> Clear
+            </button>
+            <button
+              type="button"
+              class="add-job-modal-close"
+              id="addJobModalClose"
+              aria-label="Close"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="add-job-modal-body p-0">
+          <div
+            id="addJobFormMessage"
+            class="add-job-form-message hidden m-3"
+            role="alert"
+          ></div>
+
+          <form id="addJobForm" class="add-program-form-layout">
+            <input type="hidden" id="editProgramId" value="" />
+
+            <div class="form-layout-left">
+              <label
+                for="modalProgramImage"
+                class="banner-upload-container"
+                id="bannerUploadArea"
+              >
+                <div class="upload-placeholder" id="bannerPlaceholder">
+                  <i class="fas fa-upload fa-2x"></i>
+                  <p class="fw-bold" style="font-size: 14px; margin: 0">
+                    Upload Banner Photo
+                  </p>
+                  <p style="font-size: 12px; margin: 0">
+                    Click to browse or drag & drop
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  id="modalProgramImage"
+                  name="programImage"
+                  accept="image/*"
+                  class="visually-hidden"
+                  style="
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                    clip: rect(1px, 1px, 1px, 1px);
+                  "
+                />
+                <img
+                  src=""
+                  alt="Banner Preview"
+                  class="banner-preview-img"
+                  id="bannerPreview"
+                />
+                <button
+                  type="button"
+                  class="banner-remove-img-btn"
+                  id="bannerRemoveImgBtn"
+                  aria-label="Remove image"
+                  title="Remove image"
+                >
+                  <i class="fas fa-times"></i> Remove image
+                </button>
+              </label>
+
+              <div
+                class="upload-hint text-center mt-3"
+                style="font-size: 12px; line-height: 1.4"
+              >
+                Recommended: JPG or PNG<br />at least 600 x 800px
+              </div>
+            </div>
+
+            <div class="form-layout-right">
+              <div class="form-group">
+                <label for="modalProgramType"
+                  >Program Type <span class="required">*</span></label
+                >
+                <select id="modalProgramType" name="programType" required>
+                  <option value="SPES">SPES</option>
+                  <option value="GIP">GIP</option>
+                  <option value="TUPAD">TUPAD</option>
+                  <option value="JobStart">JobStart</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <div
+                  id="customProgramTypeContainer"
+                  style="display: none; margin-top: 10px"
+                >
+                  <input
+                    type="text"
+                    id="modalCustomProgramType"
+                    class="form-control"
+                    placeholder="Enter specific program name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="modalDescription"
+                  >Program Description <span class="required">*</span></label
+                >
+                <textarea
+                  id="modalDescription"
+                  name="description"
+                  placeholder="Provide an overview of the program..."
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="modalContactInfo"
+                  >Contact Info <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="modalContactInfo"
+                  name="contactInfo"
+                  placeholder="e.g. 0912-345-6789 or email@peso.gov.ph"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="modalDeadline">Application Deadline</label>
+                  <input type="date" id="modalDeadline" name="deadline" />
+                </div>
+                <div class="form-group">
+                  <label for="modalContactPerson">Contact Person</label>
+                  <input
+                    type="text"
+                    id="modalContactPerson"
+                    name="contactPerson"
+                    placeholder="e.g. Ms. Maria Santos"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                id="addJobCancelBtn"
+                style="padding: 8px 16px; border-radius: 8px"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="addJobSubmitBtn"
+                style="
+                  padding: 8px 16px;
+                  border-radius: 8px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <i class="far fa-paper-plane"></i> Publish Program
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="saveChangesModal"
+      class="add-job-modal-overlay save-changes-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="add-job-modal-box" style="max-width: 420px">
+        <div class="add-job-modal-header">
+          <h2>
+            <i class="fas fa-check-circle" style="margin-right: 8px"></i>
+            Confirm Program Changes
+          </h2>
+          <button
+            type="button"
+            class="add-job-modal-close js-close-save-changes-modal"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="add-job-modal-body" style="padding: 16px 20px 18px">
+          <p
+            id="saveChangesMessage"
+            style="margin: 0; font-size: 14px; line-height: 1.5"
+          >
+            Are you sure you want to save this program?
+          </p>
+          <div
+            class="d-flex gap-2 justify-content-end mt-3"
+            style="margin-top: 14px"
+          >
+            <button
+              type="button"
+              class="btn btn-outline-secondary js-close-save-changes-modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary js-confirm-save-changes"
+            >
+              <i class="fas fa-save"></i>
+              <span class="btn-text">Save Changes</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="deleteConfirmModal"
+      class="add-job-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="add-job-modal-box" style="max-width: 420px">
+        <div class="add-job-modal-header">
+          <h2><i class="fas fa-trash-alt"></i> Delete Program</h2>
+          <button
+            type="button"
+            class="add-job-modal-close"
+            id="deleteModalClose"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="add-job-modal-body">
+          <p id="deleteConfirmText">
+            Are you sure you want to delete this program?
+          </p>
+          <div class="d-flex gap-2 justify-content-end mt-3">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="deleteCancelBtn"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="deleteConfirmBtn">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/toast.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script type="module" src="/js/programs/programs.js"></script>
+  </body>
+</html>

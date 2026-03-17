@@ -1,0 +1,816 @@
+:root {
+  --status-accepted-bg: var(--badge-success-bg);
+  --status-accepted-text: var(--badge-success-text);
+  --status-pending-bg: var(--badge-warning-bg);
+  --status-pending-text: var(--badge-warning-text);
+  --status-renewal-bg: var(--badge-info-bg);
+  --status-renewal-text: var(--badge-info-text);
+  --status-declined-bg: var(--badge-danger-bg);
+  --status-declined-text: var(--badge-danger-text);
+  --status-other-bg: var(--badge-neutral-bg);
+  --status-other-text: var(--badge-neutral-text);
+
+  --primary-bg: var(--color-bg-body);
+  --card-bg: var(--color-bg-card);
+  --text-main: var(--color-text-primary);
+  --text-sub: var(--color-text-muted);
+  --header-bg: var(--table-header-bg);
+  --border-color: var(--color-border-subtle);
+  --accent-blue: var(--color-accent);
+
+  /* Fallback variables */
+  --table-header-bg: #f8fafc;
+  --table-row-hover: #f1f5f9;
+  --table-row-border: #e2e8f0;
+  --color-text-heading: #1e293b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+body {
+  background-color: var(--color-bg-body);
+  color: var(--color-text-primary);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  color: var(--text-sub);
+  font-size: 16px;
+}
+
+/* =========================================
+   TOP SECTION: Search, Filters, Layout
+   ========================================= */
+
+.scholarship-top-section {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 16px 16px 0 0;
+  border-bottom: none;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Top Row: Search (Left) + Date/Add (Right) */
+.scholarship-top-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.scholarship-top-search-row {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scholarship-top-search-row .search-wrapper {
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+}
+
+.scholarship-top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* --------------------------------------------------
+   FIXED ALIGNMENT SECTION & THEME-AWARE (Light/Dark)
+   -------------------------------------------------- 
+*/
+
+/* 1. Pill container – theme-aware (same as other filter dropdowns) */
+.scholarship-top-right .scholarship-date-inline {
+  flex-shrink: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  padding: 6px 16px;
+  border-radius: 12px;
+  height: 48px;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* 2. Inner Text Wrapper: SET TO STATIC */
+.scholarship-top-right .scholarship-date-inline .custom-dropdown {
+  background: transparent;
+  padding: 0;
+  border: none;
+  height: auto;
+  min-width: 100px;
+  width: 100%;
+  position: static;
+}
+
+/* 3. Dropdown Menu – theme-aware (matches theme.css dropdowns) */
+.scholarship-top-right .dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 8px 0;
+
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.scholarship-top-right .dropdown-options li {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  padding: 10px 16px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.scholarship-top-right .dropdown-options li:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.scholarship-top-right .dropdown-options li.active {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Selected label in trigger – theme text color */
+.scholarship-top-right .scholarship-date-inline .dropdown-selected {
+  color: var(--color-text-primary);
+}
+
+/* -------------------------------------------------- */
+
+/* Add Button */
+.scholarship-add-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0 20px;
+  height: 48px;
+  border-radius: 12px;
+  white-space: nowrap;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.scholarship-add-btn:hover {
+  background-color: #4338ca;
+  color: white;
+}
+
+/* --- Filter Row: Status + Type --- */
+.scholarship-top-filters-row {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.scholarship-filters-single-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Status Filter Cells Wrapper */
+.scholarship-filters-single-row .scholarship-filter-cells:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.scholarship-filter-type-label {
+  margin-left: auto;
+  padding-left: 20px;
+}
+
+.scholarship-filter-th {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+.scholarship-filter-cells {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.scholarship-filter-cell {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    background 0.12s;
+}
+
+.scholarship-filter-cell:hover {
+  color: var(--color-text-primary);
+  background: var(--color-chip-bg, #e2e8f0);
+}
+
+.scholarship-filter-cell.active {
+  background: var(--color-accent-soft, #dbeafe);
+  color: var(--color-accent, #2563eb);
+}
+
+/* HIDE Level Filter as requested previously */
+.level-filter-group {
+  display: none !important;
+}
+
+.scholarship-level-wrapper {
+  display: none !important;
+}
+
+/* =========================================
+   RESPONSIVE MOBILE LAYOUT (FIXED)
+   ========================================= */
+
+@media (max-width: 992px) {
+  /* 1. Stack the Search Bar */
+  .scholarship-top-row.scholarship-top-search-row {
+    flex-direction: column;
+    align-items: stretch; /* Full width */
+    gap: 16px;
+  }
+
+  .scholarship-top-search-row .search-wrapper {
+    max-width: 100%;
+  }
+
+  /* 2. Balance Date Dropdown and Add Button (50/50 split) */
+  .scholarship-top-right {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Keep filter dropdowns balanced side-by-side */
+  .scholarship-top-right .scholarship-date-inline {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0; /* Prevents overflow */
+  }
+
+  /* Force inner dropdown to fill the parent container */
+  .scholarship-top-right .scholarship-date-inline .custom-dropdown {
+    width: 100%;
+  }
+
+  .scholarship-top-right .scholarship-date-inline .dropdown-selected {
+    width: 100%;
+    justify-content: space-between; /* Text left, Arrow right */
+  }
+
+  /* Move Add button below, full width */
+  .scholarship-add-btn {
+    flex: 0 0 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* 3. Fix Status and Type Filters (Stack Vertically) */
+
+  /* Reset the row to column layout */
+  .scholarship-filters-single-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  /* Ensure Status pills stay in ONE row (scroll if needed) */
+  #scholarStatusPills.scholarship-filter-cells {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+  }
+
+  #scholarStatusPills .scholarship-filter-cell {
+    flex: 0 0 auto;
+  }
+
+  /* Other filter cells can still wrap naturally */
+  .scholarship-filters-single-row .scholarship-filter-cells {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 8px;
+  }
+
+  /* Reset the Type Label position to left */
+  .scholarship-filter-type-label {
+    margin-left: 0;
+    padding-left: 0;
+    margin-top: 4px;
+    display: block;
+    width: 100%;
+  }
+
+  /* Ensure the Type tabs align correctly */
+  #scholarTabs {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Extra tweak for very small screens (iPhone SE, etc) */
+@media (max-width: 400px) {
+  /* Keep dropdown filters balanced; button stays below via rules above */
+  .scholarship-top-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .scholarship-top-right .scholarship-date-inline,
+  .scholarship-add-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   GENERAL ELEMENTS (Search, Dropdown Logic)
+   ========================================= */
+
+/* Search Bar */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-wrapper i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #1e293b;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  background-color: #f1f5f9;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  background-color: #ffffff;
+  border-color: #1e293b;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.05);
+}
+
+/* Dropdown Internals */
+.custom-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  user-select: none;
+  width: 100%;
+}
+
+/* Default dropdown behavior – same width as trigger, aligned, no overlap (matches theme.css) */
+.dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  min-width: 0;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 8px 0;
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.custom-dropdown.open .dropdown-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* General options – same design as theme (scholarship-applied-style) */
+.dropdown-options li {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0;
+}
+
+.dropdown-options li:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.dropdown-options li.active {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.dropdown-selected i {
+  transition: transform 0.2s ease;
+}
+.custom-dropdown.open .dropdown-selected i {
+  transform: rotate(180deg);
+}
+
+/* Custom Date Inputs (Hidden by default) */
+.custom-date-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  margin-left: 4px;
+  border-left: 2px solid #cbd5e1;
+}
+
+.custom-date-container.hidden {
+  display: none !important;
+}
+
+.date-input-small {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: #1e293b;
+  background-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+  max-width: 130px;
+}
+.date-input-small:focus {
+  background-color: #ffffff;
+  border-color: #1e293b;
+}
+
+/* =========================================
+   TABLE STYLES
+   ========================================= */
+
+.table-container {
+  background: var(--card-bg);
+  border-radius: 0 0 12px 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.table-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; /* Force table width to trigger scroll on mobile */
+}
+
+thead {
+  background-color: var(--table-header-bg);
+  color: var(--text-sub);
+}
+
+th {
+  text-align: center; /* Center headers */
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* First column align left */
+.scholarship-table th:first-child,
+.scholarship-table td:first-child {
+  text-align: left;
+}
+
+td {
+  text-align: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--table-row-border);
+  vertical-align: middle;
+  font-size: 14px;
+  background-color: var(--card-bg);
+  white-space: nowrap;
+}
+
+tbody tr:hover td {
+  background-color: var(--table-row-hover);
+}
+
+/* Actions Column */
+.scholarship-actions {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.scholarship-actions .btn {
+  padding: 10px 16px;
+  min-height: 38px;
+  margin: 0;
+}
+
+/* Use CSS spacing between action buttons (keep <td> as table-cell for continuous row borders) */
+.scholarship-actions .btn + .btn {
+  margin-left: 8px;
+}
+
+/* Badges */
+.scholarship-status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.scholarship-status-badge.accepted {
+  background: var(--status-accepted-bg);
+  color: var(--status-accepted-text);
+}
+.scholarship-status-badge.pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+}
+.scholarship-status-badge.renewal {
+  background: var(--status-renewal-bg);
+  color: var(--status-renewal-text);
+}
+.scholarship-status-badge.declined {
+  background: var(--status-declined-bg);
+  color: var(--status-declined-text);
+}
+.scholarship-status-badge.other {
+  background: var(--status-other-bg);
+  color: var(--status-other-text);
+}
+
+.scholarship-type-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-block;
+  border: none;
+}
+.scholarship-type-badge.renewal {
+  background: var(--badge-info-bg);
+  color: var(--badge-info-text);
+}
+.scholarship-type-badge.new {
+  background: var(--badge-success-bg);
+  color: var(--badge-success-text);
+}
+
+/* --- Table Footer --- */
+.table-footer {
+  padding: 15px 24px;
+  border-top: 1px solid var(--table-row-border);
+  color: var(--text-sub);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background-color: var(--card-bg);
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-link {
+  color: var(--color-accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 500;
+}
+.pagination-link:hover:not([aria-disabled="true"]) {
+  text-decoration: underline;
+}
+.pagination-link[aria-disabled="true"] {
+  color: var(--color-text-muted);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* =========================================
+   MODAL
+   ========================================= */
+.applicant-info-modal-overlay {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease-out,
+    visibility 0.3s ease-out;
+}
+.applicant-info-modal-overlay.open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.applicant-info-modal-box {
+  background: var(--color-bg-card);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 1150px;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.94);
+  opacity: 0;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease-out;
+}
+.applicant-info-modal-overlay.open .applicant-info-modal-box {
+  transform: scale(1);
+  opacity: 1;
+}
+.applicant-info-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #0f2744 0%, #1e3a5f 100%);
+  color: #fff;
+  flex-shrink: 0;
+}
+.applicant-info-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+.applicant-info-email {
+  font-size: 14px;
+  opacity: 0.9;
+}
+.applicant-info-status-badge,
+.applicant-info-program-badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  margin-right: 8px;
+  display: inline-block;
+  margin-top: 8px;
+}
+.applicant-info-modal-close {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 20px;
+}
+.applicant-info-modal-body {
+  padding: 28px 32px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@media (max-width: 1000px) {
+  .applicant-info-modal-box {
+    max-width: 96%;
+  }
+}
+
+@media (max-width: 600px) {
+  .applicant-info-modal-box {
+    max-width: 98%;
+  }
+}
+
+.d-block {
+  display: block !important;
+}
+.d-none {
+  display: none !important;
+}

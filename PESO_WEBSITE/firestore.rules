@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---------------- HELPER FUNCTIONS ---------------- */
+    // Check if the authenticated user is an admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    /* ---------------- JOB PROGRAMS ---------------- */
+    match /jobPrograms/{document} {
+      // Anyone logged in can view jobs
+      allow read: if request.auth != null;
+
+      // Only admins can add, edit, or delete jobs
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- OTHER PROGRAMS (The Fix) ---------------- */
+    // This collection stores the custom "Other" program types
+    match /otherPrograms/{docId} {
+      // Allow any logged-in user to READ the list (so the dropdown can work for everyone)
+      allow read: if request.auth != null;
+
+      // Allow ADMINS to add new program types
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- ANNOUNCEMENTS ---------------- */
+    match /announcements/{document} {
+      // Anyone logged in can read announcements
+      allow read: if request.auth != null;
+
+      // Only admins can create, update, or delete announcements
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- SCHOLARSHIP PROGRAMS (for mobile app) ---------------- */
+    match /scholarshipPrograms/{document} {
+      // Anyone logged in can read (mobile app + admin list)
+      allow read: if request.auth != null;
+
+      // Only admins can create, update, or delete scholarship programs
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- USERS ---------------- */
+    match /users/{userId} {
+
+      allow read: if request.auth != null &&
+        (request.auth.uid == userId || isAdmin());
+
+      allow write: if request.auth != null &&
+        request.auth.uid == userId;
+
+      /* -------- Subcollection: JobApplied -------- */
+      match /JobApplied/{docId} {
+        allow read:  if request.auth != null &&
+          (request.auth.uid == userId || isAdmin());
+        allow write: if isAdmin();
+        allow write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: ScholarshipApplied -------- */
+      match /ScholarshipApplied/{docId} {
+        allow read: if request.auth != null &&
+          (request.auth.uid == userId || isAdmin());
+        allow write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: ChatBot -------- */
+      match /ChatBot/{docId} {
+        allow read: if request.auth != null &&
+          (request.auth.uid == userId || isAdmin());
+        allow write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+    }
+
+    /* ---------------- COLLECTION GROUP QUERIES ---------------- */
+    match /{path=**}/JobApplied/{docId} {
+      allow read: if isAdmin();
+    }
+
+    match /{path=**}/ScholarshipApplied/{docId} {
+      allow read: if isAdmin();
+    }
+  }
+}

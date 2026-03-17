@@ -1,0 +1,206 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+html.auth-pending body { visibility: hidden !important; }
+
+/* ── Body ── */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  margin: 0;
+  padding: 20px;
+  background: #525659;
+}
+
+/* ── Print button ── */
+.no-print { text-align: center; margin-bottom: 16px; }
+.no-print button {
+  padding: 10px 24px; font-size: 15px; cursor: pointer;
+  background: #007bff; color: #fff; border: none;
+  border-radius: 5px; font-weight: bold;
+}
+
+/* ════════ PAPER / PAGE ════════ */
+.preview-paper {
+  width: 210mm; margin: 0 auto;
+  background: white; box-shadow: 0 0 12px rgba(0,0,0,.6);
+}
+.page { width: 100%; padding: 8mm 10mm; background: white; }
+.page + .page { padding-top: 4mm; border-top: 2px dashed #ccc; }
+
+/* ════════ HELPERS ════════ */
+.bold   { font-weight: bold; }
+.center { text-align: center; }
+.data-val {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold; font-size: 10px;
+  text-transform: uppercase; padding: 0 2px; color: #000;
+}
+.empty-row   { display: none !important; }
+.empty-col   { display: none !important; }
+.empty-block { display: none !important; }
+
+/* ════════ FORM HEADER ════════ */
+.form-header { display: flex; align-items: stretch; border: 1px solid #000; }
+.form-header .nsrp-label {
+  width: 90px; min-width: 90px; border-right: 1px solid #000;
+  padding: 4px 6px; font-size: 9px; font-weight: bold;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.form-header .title-block { flex: 1; text-align: center; padding: 4px 6px; line-height: 1.5; }
+.form-header .title-block .main-title { font-size: 12px; font-weight: bold; text-transform: uppercase; }
+.form-header .title-block .form-title { font-size: 11px; font-weight: bold; }
+
+/* ════════ INSTRUCTIONS ════════ */
+.instructions {
+  border: 1px solid #000; border-top: none;
+  padding: 4px 6px; font-size: 9px; background: #fff;
+}
+
+/* ════════ SECTION HEADERS ════════ */
+.sec-hdr {
+  background: #bbb; font-weight: bold; font-size: 10px;
+  padding: 2px 5px; border: 1px solid #000;
+  border-top: none; text-transform: uppercase;
+}
+.sec-hdr-top { border-top: 1px solid #000; }
+
+/* ════════ TABLES ════════ */
+.tbl {
+  width: 100%; border-collapse: collapse;
+  border: 1px solid #000; border-top: none;
+  font-size: 9.5px; table-layout: fixed;
+}
+.tbl th, .tbl td {
+  border: 1px solid #000; padding: 2px 4px;
+  vertical-align: middle; overflow: hidden;
+}
+.tbl th { background: #e8e8e8; font-weight: bold; text-align: center; }
+
+/* ════════ FIELD LABEL ════════ */
+.field-lbl { font-size: 8px; font-weight: bold; display: block; margin-bottom: 1px; }
+
+/* ════════ NAME ROW ════════ */
+.name-row {
+  display: flex; border: 1px solid #000;
+  border-top: none; border-bottom: 1px dashed #000;
+}
+.name-row .nc { flex: 1; padding: 2px 5px; border-right: 1px solid #000; min-width: 0; }
+.name-row .nc:last-child { border-right: none; }
+.name-row .nc.suffix { flex: 0 0 100px; }
+
+/* ════════ PERSONAL BLOCK ════════ */
+.personal-block { display: flex; border: 1px solid #000; border-top: none; }
+.personal-left { width: 42%; border-right: 1px solid #000; display: flex; flex-direction: column; }
+.personal-left .cell { padding: 3px 5px; border-bottom: 1px solid #000; }
+.personal-left .cell:last-child { border-bottom: none; flex: 1; }
+.personal-right { flex: 1; display: flex; flex-direction: column; }
+.personal-right .addr-hdr {
+  background: #e0e0e0; font-weight: bold; font-size: 8.5px;
+  padding: 2px 5px; border-bottom: 1px solid #000;
+}
+.personal-right .addr-row {
+  padding: 2px 5px; border-bottom: 1px solid #000;
+  min-height: 20px; display: flex; align-items: center; gap: 4px;
+}
+.personal-right .addr-row:last-child { border-bottom: none; flex: 1; }
+.personal-right .addr-lbl { font-size: 8px; font-weight: bold; min-width: 110px; }
+
+/* ════════ TIN / DISABILITY ROW ════════ */
+.tin-dis-row { display: flex; border: 1px solid #000; border-top: none; }
+.tin-dis-left { flex: 1; border-right: 1px solid #000; display: flex; flex-direction: column; }
+.tin-dis-left .tin-cell { padding: 2px 5px; border-bottom: 1px solid #000; }
+.tin-dis-left .dis-cell { padding: 3px 5px; flex: 1; }
+.tin-dis-right { width: 30%; display: flex; flex-direction: column; }
+.tin-dis-right .hce { padding: 2px 5px; border-bottom: 1px solid #000; }
+.tin-dis-right .hce:last-child { border-bottom: none; flex: 1; }
+.dis-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px 6px; margin-top: 2px; font-size: 9px; }
+.dis-grid label { display: flex; align-items: center; gap: 2px; }
+
+/* ════════ EMPLOYMENT STATUS ════════ */
+.emp-row { display: flex; border: 1px solid #000; border-top: none; }
+/* flex:1 = 50/50 by default. When one gets .empty-col it's removed
+   and the sibling stretches to 100% automatically — no extra CSS needed. */
+.emp-col { flex: 1; padding: 3px 5px; border-right: 1px solid #000; min-width: 0; }
+.emp-col:last-child { border-right: none; }
+.emp-types {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px 6px; margin-top: 3px; padding-left: 10px; font-size: 9px;
+}
+.emp-types label { display: flex; align-items: flex-start; gap: 2px; line-height: 1.3; }
+.unemp-types { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; margin-top: 3px; font-size: 9px; }
+.unemp-types label { display: flex; align-items: flex-start; gap: 2px; line-height: 1.3; }
+.unemp-span-2 { grid-column: 1 / -1; }
+
+/* ════════ OFW / 4PS ROWS ════════ */
+.info-row {
+  border: 1px solid #000; border-top: none;
+  padding: 3px 6px; font-size: 9.5px;
+  display: flex; flex-wrap: wrap; gap: 3px 16px; align-items: center;
+}
+.info-row span { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+/* ════════ CHECKBOXES ════════ */
+input[type="checkbox"] {
+  transform: scale(1.1); margin: 0 2px 0 0;
+  vertical-align: middle; accent-color: #333;
+  pointer-events: none; flex-shrink: 0;
+}
+
+/* ════════ SKILLS GRID ════════ */
+.skills-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px 10px; font-size: 9px; padding: 4px 6px;
+  border: 1px solid #000; border-top: none;
+}
+.skills-grid label { display: flex; align-items: center; gap: 3px; }
+
+/* ════════ CERTIFICATION ════════ */
+.cert-box {
+  border: 1px solid #000; border-top: none;
+  padding: 6px 10px; font-size: 9px; text-align: justify; line-height: 1.4;
+}
+.sig-row {
+  margin-top: 16px; display: flex;
+  justify-content: space-between; align-items: flex-end; padding: 0 20px;
+}
+.sig-block { text-align: center; }
+.sig-line {
+  border-bottom: 1px solid #000; min-height: 36px; margin-bottom: 2px;
+  display: flex; align-items: center; justify-content: center;
+}
+#viewSigApp img {
+  max-height: 34px; height: auto; max-width: 100%;
+  object-fit: contain; display: block; margin: 0 auto;
+}
+
+/* ════════ PESO SECTION ════════ */
+.peso-box { border: 2px solid #000; border-top: none; padding: 4px 8px; }
+.peso-dotted {
+  border-top: 2px dotted #000; text-align: center;
+  font-weight: bold; font-size: 8.5px; padding: 2px 0; margin-bottom: 5px;
+}
+.peso-inner { display: flex; gap: 10px; }
+.peso-left  { width: 42%; }
+.peso-right { flex: 1; padding-left: 10px; display: flex; flex-direction: column; }
+.peso-ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 8px; font-size: 9px; margin-top: 3px; }
+.peso-ref-grid label { display: flex; align-items: center; gap: 3px; }
+.assessor-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; }
+.assessor-block { text-align: center; }
+.assessor-line { border-bottom: 1px solid #000; min-height: 16px; margin-bottom: 2px; }
+
+/* ════════ PRINT ════════ */
+@page { size: 210mm 297mm; margin: 8mm; }
+@media print {
+  body { background: none; margin: 0; padding: 0; }
+  .preview-paper { width: 100%; box-shadow: none; }
+  .no-print { display: none !important; }
+  .page { padding: 4mm 6mm; }
+  .page + .page { padding-top: 2mm; border-top: none; }
+  .empty-row, .empty-col, .empty-block { display: none !important; }
+  .cert-box, .peso-box, .tbl { page-break-inside: avoid; break-inside: avoid; }
+  .sec-hdr { page-break-after: avoid; break-after: avoid; }
+}

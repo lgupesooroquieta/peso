@@ -1,0 +1,951 @@
+/* ===== PESO Admin – Light / Dark theme tokens =====
+   Toggle via data-theme="light" | data-theme="dark" on <html> */
+
+/* Hide protected page content until auth is confirmed (avoids flash before redirect) */
+html.auth-pending body {
+  visibility: hidden !important;
+}
+
+/* Disable all transitions during theme switch so everything goes dark/light at once */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
+/* ----- ☀️ Light Mode (default) ----- */
+:root {
+  /* Surfaces */
+  --color-bg-body: #f5f7fa;
+  --color-bg-topbar: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-input: #ffffff;
+  --color-bg-input-border: #e2e8f0;
+
+  /* Sidebar – white with soft shadow */
+  --color-bg-sidebar: #ffffff;
+  --color-sidebar-border: #e5e7eb;
+  --color-sidebar-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --color-sidebar-link: #4b5563;
+  --color-sidebar-link-active-bg: #eff6ff;
+  --color-sidebar-link-active: #1e40af;
+  --color-sidebar-exit-border: #e5e7eb;
+
+  /* Text & icons */
+  --color-text-primary: #111827;
+  --color-text-heading: #111827;
+  --color-text-muted: #6b7280;
+  --color-icon-default: #6b7280;
+  --color-icon-active: #1e40af;
+
+  /* Panels / cards – white, subtle gray borders */
+  --color-border-subtle: rgba(15, 23, 42, 0.08);
+  --color-border-card: #e5e7eb;
+
+  /* Accent – blue/cyan, adjusted for light contrast */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-soft: rgba(59, 130, 246, 0.12);
+  --color-chip-bg: #f3f4f6;
+
+  /* Buttons */
+  --color-btn-primary: #3b82f6;
+  --color-btn-primary-hover: #2563eb;
+
+  /* Shadows */
+  --shadow-card: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.04);
+  --shadow-topbar: 0 2px 4px rgba(15, 23, 42, 0.06);
+
+  /* Tables – light gray header, white rows, soft separators */
+  --table-bg: #ffffff;
+  --table-header-bg: #f1f5f9;
+  --table-header-text: #334155;
+  --table-row-border: #e2e8f0;
+  --table-row-hover: #eff6ff;
+
+  /* Inputs / search – light */
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
+  --input-text: #111827;
+  --input-placeholder: #94a3b8;
+
+  /* Status badges – vibrant but not too saturated (light mode) */
+  --badge-success-bg: #dcfce7;
+  --badge-success-text: #166534;
+  --badge-warning-bg: #fef3c7;
+  --badge-warning-text: #b45309;
+  --badge-danger-bg: #fee2e2;
+  --badge-danger-text: #991b1b;
+  --badge-info-bg: #dbeafe;
+  --badge-info-text: #1e40af;
+  --badge-neutral-bg: #f3f4f6;
+  --badge-neutral-text: #374151;
+
+  /* Type/category data text – dark blue in light mode */
+  --color-type-text: #1e40af;
+
+  /* Program type tag pills – light mode */
+  --tag-spes-bg: rgba(37, 99, 235, 0.18);
+  --tag-spes-text: #1e40af;
+  --tag-gip-bg: rgba(16, 185, 129, 0.2);
+  --tag-gip-text: #047857;
+  --tag-tupad-bg: rgba(249, 115, 22, 0.2);
+  --tag-tupad-text: #c2410c;
+  --tag-jobstart-bg: rgba(109, 40, 217, 0.2);
+  --tag-jobstart-text: #5b21b6;
+  --tag-other-bg: rgba(148, 163, 184, 0.22);
+  --tag-other-text: #475569;
+}
+
+/* ----- 🌙 Dark Mode ----- */
+:root[data-theme="dark"] {
+  /* Surfaces – deep navy */
+  --color-bg-body: #0b132b;
+  --color-bg-topbar: #0b132b;
+  --color-bg-card: #121a2f;
+  --color-bg-elevated: #121a2f;
+  --color-bg-input: #1e293b;
+  --color-bg-input-border: #334155;
+
+  /* Sidebar – slightly lighter than background, soft shadow */
+  --color-bg-sidebar: #101c3d;
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+  --color-sidebar-shadow: 4px 0 20px rgba(0, 0, 0, 0.35);
+  --color-sidebar-link: #94a3b8;
+  --color-sidebar-link-active-bg: rgba(59, 130, 246, 0.18);
+  --color-sidebar-link-active: #93c5fd;
+  --color-sidebar-exit-border: rgba(255, 255, 255, 0.06);
+
+  /* Text – white headings, light gray descriptions */
+  --color-text-primary: #f1f5f9;
+  --color-text-heading: #ffffff;
+  --color-text-muted: #94a3b8;
+  --color-icon-default: #94a3b8;
+  --color-icon-active: #93c5fd;
+
+  /* Panels / cards – smooth dark, subtle borders */
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border-card: rgba(255, 255, 255, 0.08);
+
+  /* Accent – blue/cyan, soft highlight on hover */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+  --color-accent-soft: rgba(59, 130, 246, 0.2);
+  --color-chip-bg: rgba(148, 163, 184, 0.15);
+
+  /* Buttons */
+  --color-btn-primary: #3b82f6;
+  --color-btn-primary-hover: #60a5fa;
+
+  /* Shadows */
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-topbar: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  /* Tables – slightly lighter than page, medium gray headers, thin dark borders */
+  --table-bg: #0f1729;
+  --table-header-bg: #1e293b;
+  --table-header-text: #cbd5e1;
+  --table-row-border: rgba(255, 255, 255, 0.06);
+  --table-row-hover: rgba(59, 130, 246, 0.08);
+
+  /* Inputs / search – dark bg, gray border, white text */
+  --input-bg: #1e293b;
+  --input-border: #334155;
+  --input-text: #f1f5f9;
+  --input-placeholder: #64748b;
+
+  /* Status badges – soft, readable in dark mode */
+  --badge-success-bg: rgba(34, 197, 94, 0.25);
+  --badge-success-text: #86efac;
+  --badge-warning-bg: rgba(234, 179, 8, 0.25);
+  --badge-warning-text: #fde047;
+  --badge-danger-bg: rgba(239, 68, 68, 0.25);
+  --badge-danger-text: #fca5a5;
+  --badge-info-bg: rgba(59, 130, 246, 0.25);
+  --badge-info-text: #93c5fd;
+  --badge-neutral-bg: rgba(148, 163, 184, 0.2);
+  --badge-neutral-text: #cbd5e1;
+
+  /* Type/category data text – light blue in dark mode */
+  --color-type-text: #93c5fd;
+
+  /* Program type tag pills – dark mode */
+  --tag-spes-bg: rgba(59, 130, 246, 0.25);
+  --tag-spes-text: #93c5fd;
+  --tag-gip-bg: rgba(34, 197, 94, 0.25);
+  --tag-gip-text: #86efac;
+  --tag-tupad-bg: rgba(249, 115, 22, 0.25);
+  --tag-tupad-text: #fdba74;
+  --tag-jobstart-bg: rgba(139, 92, 246, 0.25);
+  --tag-jobstart-text: #c4b5fd;
+  --tag-other-bg: rgba(148, 163, 184, 0.2);
+  --tag-other-text: #cbd5e1;
+}
+
+/* ----- Global theme-aware components (use after theme.css) ----- */
+
+/* Cards/panels – border from theme */
+.card,
+.table-container,
+[class*="-top-section"],
+[class*="-card"] {
+  border-color: var(--color-border-subtle);
+}
+
+/* Table background (slightly lighter than page in dark) */
+.table-container {
+  background: var(--table-bg);
+}
+
+/* Table body – all data cells use theme text color (white in dark, dark in light) */
+.table-container tbody td,
+.table-container td,
+.announcements-table tbody td,
+table tbody td {
+  color: var(--color-text-primary) !important;
+}
+
+/* Table header – medium gray, bold */
+.table-container thead th,
+.announcements-table thead th,
+table thead th {
+  font-weight: 700;
+}
+
+/* Table content that had hardcoded dark colors – use theme */
+.program-name,
+.applicant-name,
+.announcement-title {
+  color: var(--color-text-primary) !important;
+}
+
+/* Type/category data (Job, Scholarship, etc.) – dark blue in light, light blue in dark */
+.announcement-target,
+.table-type-text {
+  color: var(--color-type-text) !important;
+}
+
+.program-type,
+.program-description,
+.program-deadline,
+.program-contact,
+.applicant-email {
+  color: var(--color-text-muted) !important;
+}
+
+.program-contact-secondary {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.applicants-count {
+  background-color: var(--color-accent-soft) !important;
+  color: var(--color-accent) !important;
+}
+
+.program-image-placeholder {
+  background-color: var(--color-chip-bg) !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* Table footer and pagination – theme text */
+.table-footer {
+  border-top-color: var(--table-row-border) !important;
+  color: var(--color-text-muted) !important;
+}
+
+.table-footer-count,
+.pagination-label {
+  color: var(--color-text-muted) !important;
+}
+
+.pagination-link {
+  color: var(--color-accent) !important;
+}
+
+.pagination-link:hover:not([aria-disabled="true"]) {
+  color: var(--color-accent-hover) !important;
+}
+
+.pagination-link[aria-disabled="true"] {
+  color: var(--color-text-muted) !important;
+}
+
+/* Dropdowns and date filter – theme-aware (same design as scholarship applied table) */
+.dropdown-options,
+.date-filter-group {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+}
+
+.date-filter-group.active {
+  border-color: var(--color-accent) !important;
+}
+
+.dropdown-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary) !important;
+  user-select: none;
+  width: 100%;
+}
+
+/* Dropdown panel – scholarship-applied-style look for all tables */
+.dropdown-options {
+  position: absolute;
+  border-radius: 12px;
+  padding: 8px 0;
+  box-shadow: var(--shadow-card);
+  list-style: none;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.custom-dropdown.open .dropdown-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-options li {
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: 10px 16px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.dropdown-options li:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.dropdown-options li.active {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Table filter dropdowns – same width as button, aligned, no overlap */
+.date-filter-group {
+  position: relative;
+}
+
+.date-filter-group .custom-dropdown {
+  width: 100%;
+  min-width: 0;
+}
+
+.date-filter-group .dropdown-options,
+.custom-dropdown .dropdown-options {
+  left: 0;
+  right: auto;
+  width: 100%;
+  min-width: 0;
+  top: calc(100% + 4px);
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------
+   UNIFIED TABLE FILTER DROPDOWN (Pill + Menu)
+   Applied to all table filter dropdowns (job-applicants, programs, 
+   scholarship-applied, announcements, scholarship-programs)
+   -------------------------------------------------- */
+
+/* 1. Pill container – theme-aware (same design as scholarship-applied) */
+.date-filter-group,
+.program-type-filter-group,
+.level-filter-group {
+  flex-shrink: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  padding: 6px 16px;
+  border-radius: 12px;
+  height: 48px;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* 2. Inner Text Wrapper: SET TO STATIC */
+.date-filter-group .custom-dropdown,
+.program-type-filter-group .custom-dropdown,
+.level-filter-group .custom-dropdown {
+  background: transparent;
+  padding: 0;
+  border: none;
+  height: auto;
+  min-width: 100px;
+  width: 100%;
+  position: static;
+}
+
+/* 3. Dropdown Menu – theme-aware (matches theme.css dropdowns) */
+.date-filter-group .dropdown-options,
+.program-type-filter-group .dropdown-options,
+.level-filter-group .dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 8px 0;
+
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.date-filter-group .dropdown-options li,
+.program-type-filter-group .dropdown-options li,
+.level-filter-group .dropdown-options li {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  padding: 10px 16px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.date-filter-group .dropdown-options li:hover,
+.program-type-filter-group .dropdown-options li:hover,
+.level-filter-group .dropdown-options li:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.date-filter-group .dropdown-options li.active,
+.program-type-filter-group .dropdown-options li.active,
+.level-filter-group .dropdown-options li.active {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Selected label in trigger – theme text color */
+.date-filter-group .dropdown-selected,
+.program-type-filter-group .dropdown-selected,
+.level-filter-group .dropdown-selected {
+  color: var(--color-text-primary);
+}
+
+/* Show dropdown when open */
+.date-filter-group .custom-dropdown.open .dropdown-options,
+.program-type-filter-group .custom-dropdown.open .dropdown-options,
+.level-filter-group .custom-dropdown.open .dropdown-options,
+.date-filter-group .custom-dropdown.active .dropdown-options,
+.program-type-filter-group .custom-dropdown.active .dropdown-options,
+.level-filter-group .custom-dropdown.active .dropdown-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Filter chips (applicants, programs, etc.) */
+.applicant-filter-th,
+.scholarship-filter-type-label {
+  color: var(--color-text-muted) !important;
+}
+
+.applicant-filter-cell {
+  color: var(--color-text-muted) !important;
+}
+
+.applicant-filter-cell:hover {
+  background: var(--color-chip-bg) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.applicant-filter-cell.active {
+  background: var(--color-accent-soft) !important;
+  color: var(--color-accent) !important;
+}
+
+.search-wrapper i,
+.search-wrapper > i {
+  color: var(--color-icon-default) !important;
+}
+
+/* Inputs and search – dark/light from theme */
+.search-input,
+.form-control,
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"] {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+
+.search-input::placeholder,
+.form-control::placeholder,
+input::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+/* Page headings use heading color */
+.page-header h1 {
+  color: var(--color-text-heading) !important;
+}
+
+/* Primary buttons use accent */
+.btn-primary {
+  background-color: var(--color-btn-primary) !important;
+  border-color: var(--color-btn-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-btn-primary-hover) !important;
+  border-color: var(--color-btn-primary-hover) !important;
+}
+
+/* Indigo primary button (Add Services, Add Announcement, Add scholar)
+   Light mode: use dark navy to match table/header styling
+   Dark mode overrides keep the original indigo accent */
+.btn-indigo {
+  background-color: #0f2744 !important; /* dark navy */
+  border-color: #0f2744 !important;
+  color: #fff !important;
+}
+.btn-indigo:hover,
+.btn-indigo:focus {
+  background-color: #1e3a5f !important; /* slightly lighter navy */
+  border-color: #1e3a5f !important;
+  color: #fff !important;
+}
+.btn-indigo:active {
+  background-color: #020617 !important; /* very dark navy for pressed state */
+  border-color: #020617 !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .btn-indigo {
+  background-color: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .btn-indigo:hover,
+[data-theme="dark"] .btn-indigo:focus {
+  background-color: #3730a3 !important;
+  border-color: #3730a3 !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .btn-indigo:active {
+  background-color: #312e81 !important;
+  border-color: #312e81 !important;
+  color: #fff !important;
+}
+
+/* Toolbar Add button – same size as scholarship-add-btn (48px, 12px radius) */
+/* Applies to: Programs (Add Services), Scholarship Programs (Add New), Announcements (Add Announcement), Scholarship Applicants (Add scholar) */
+.action-buttons .btn-indigo,
+.announcements-top-right .btn-announcement-add,
+.scholarship-top-right .scholarship-add-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0 20px;
+  height: 48px;
+  border-radius: 12px;
+  white-space: nowrap;
+  border: none;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+/* Status badges – soft in dark, vibrant in light */
+.badge-green,
+.badge.bg-success,
+#applicantsTable .badge.bg-success {
+  background-color: var(--badge-success-bg) !important;
+  color: var(--badge-success-text) !important;
+}
+
+.badge-yellow,
+.badge-orange,
+.badge.bg-warning,
+#applicantsTable .badge.bg-warning.text-dark {
+  background-color: var(--badge-warning-bg) !important;
+  color: var(--badge-warning-text) !important;
+}
+
+.badge-red,
+.badge.bg-danger,
+#applicantsTable .badge.bg-danger {
+  background-color: var(--badge-danger-bg) !important;
+  color: var(--badge-danger-text) !important;
+}
+
+.badge-blue,
+.badge.bg-info {
+  background-color: var(--badge-info-bg) !important;
+  color: var(--badge-info-text) !important;
+}
+
+.badge-gray {
+  background-color: var(--badge-neutral-bg) !important;
+  color: var(--badge-neutral-text) !important;
+}
+
+/* Scholarship periods status badges */
+.status-badge.open {
+  background: var(--badge-success-bg) !important;
+  color: var(--badge-success-text) !important;
+}
+
+.status-badge.closed {
+  background: var(--badge-neutral-bg) !important;
+  color: var(--badge-neutral-text) !important;
+}
+
+/* ----- Announcement category badges – same style as scholarship applicants ----- */
+.announcement-category {
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  display: inline-block;
+}
+
+.announcement-category--peso {
+  background: var(--badge-info-bg) !important;
+  color: var(--badge-info-text) !important;
+}
+
+.announcement-category--training {
+  background: var(--badge-success-bg) !important;
+  color: var(--badge-success-text) !important;
+}
+
+.announcement-category--tips {
+  background: var(--badge-warning-bg) !important;
+  color: var(--badge-warning-text) !important;
+}
+
+.announcement-category--other {
+  background: var(--badge-neutral-bg) !important;
+  color: var(--badge-neutral-text) !important;
+}
+
+/* ----- Table action buttons – white background, dark icon (all tables) ----- */
+.table-container .btn-outline-primary,
+.table-container .btn-outline-info,
+.table-container .btn-outline-success,
+.table-container .btn-outline-danger,
+.table-container .btn-outline-secondary,
+.actions-cell .btn-outline-primary,
+.actions-cell .btn-outline-info,
+.actions-cell .btn-outline-success,
+.actions-cell .btn-outline-danger,
+.table-scroll-wrapper .btn-outline-primary,
+.table-scroll-wrapper .btn-outline-info,
+.table-scroll-wrapper .btn-outline-success,
+.table-scroll-wrapper .btn-outline-danger,
+table tbody .btn-outline-primary,
+table tbody .btn-outline-info,
+table tbody .btn-outline-success,
+table tbody .btn-outline-danger {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.table-container .btn-outline-primary:hover,
+.table-container .btn-outline-info:hover,
+.table-container .btn-outline-success:hover,
+.table-container .btn-outline-danger:hover,
+.table-container .btn-outline-secondary:hover,
+.actions-cell .btn-outline-primary:hover,
+.actions-cell .btn-outline-info:hover,
+.actions-cell .btn-outline-success:hover,
+.actions-cell .btn-outline-danger:hover,
+.table-scroll-wrapper .btn-outline-primary:hover,
+.table-scroll-wrapper .btn-outline-info:hover,
+.table-scroll-wrapper .btn-outline-success:hover,
+.table-scroll-wrapper .btn-outline-danger:hover,
+table tbody .btn-outline-primary:hover,
+table tbody .btn-outline-info:hover,
+table tbody .btn-outline-success:hover,
+table tbody .btn-outline-danger:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* Dark mode: same as applicant table – dark blue buttons, light text (all tables) */
+[data-theme="dark"] .table-container .btn-outline-primary,
+[data-theme="dark"] .table-container .btn-outline-info,
+[data-theme="dark"] .table-container .btn-outline-success,
+[data-theme="dark"] .table-container .btn-outline-danger,
+[data-theme="dark"] .actions-cell .btn-outline-primary,
+[data-theme="dark"] .actions-cell .btn-outline-info,
+[data-theme="dark"] .actions-cell .btn-outline-success,
+[data-theme="dark"] .actions-cell .btn-outline-danger,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-primary,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-info,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-success,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-danger,
+[data-theme="dark"] table tbody .btn-outline-primary,
+[data-theme="dark"] table tbody .btn-outline-info,
+[data-theme="dark"] table tbody .btn-outline-success,
+[data-theme="dark"] table tbody .btn-outline-danger {
+  background-color: #1e3a5f !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .table-container .btn-outline-primary:hover,
+[data-theme="dark"] .table-container .btn-outline-info:hover,
+[data-theme="dark"] .table-container .btn-outline-success:hover,
+[data-theme="dark"] .table-container .btn-outline-danger:hover,
+[data-theme="dark"] .actions-cell .btn-outline-primary:hover,
+[data-theme="dark"] .actions-cell .btn-outline-info:hover,
+[data-theme="dark"] .actions-cell .btn-outline-success:hover,
+[data-theme="dark"] .actions-cell .btn-outline-danger:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-primary:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-info:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-success:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-danger:hover,
+[data-theme="dark"] table tbody .btn-outline-primary:hover,
+[data-theme="dark"] table tbody .btn-outline-info:hover,
+[data-theme="dark"] table tbody .btn-outline-success:hover,
+[data-theme="dark"] table tbody .btn-outline-danger:hover {
+  background-color: #2563eb !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .table-container .btn-outline-success:hover,
+[data-theme="dark"] .actions-cell .btn-outline-success:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-success:hover,
+[data-theme="dark"] table tbody .btn-outline-success:hover {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .table-container .btn-outline-danger:hover,
+[data-theme="dark"] .actions-cell .btn-outline-danger:hover,
+[data-theme="dark"] .table-scroll-wrapper .btn-outline-danger:hover,
+[data-theme="dark"] table tbody .btn-outline-danger:hover {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+/* ----- Single action button (dropdown) – all tables ----- */
+.actions-cell-inner,
+.actions-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.btn-actions-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--color-accent);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.btn-actions-dropdown-toggle:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover, #2563eb);
+}
+
+.btn-actions-dropdown-toggle .fa-ellipsis-v {
+  font-size: 14px;
+}
+
+.actions-dropdown-menu {
+  display: none;
+  position: fixed;
+  min-width: 140px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 1100;
+  overflow: hidden;
+}
+
+.actions-dropdown-menu.open {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: background 0.2s;
+}
+
+.actions-dropdown-item:hover {
+  background: var(--table-row-hover);
+}
+
+.actions-dropdown-item i {
+  width: 18px;
+  opacity: 0.8;
+}
+
+.actions-dropdown-item-danger {
+  color: #dc2626 !important;
+}
+
+.actions-dropdown-item-danger:hover {
+  background: rgba(220, 38, 38, 0.08) !important;
+}
+
+/* ----- Job Applicants table – dark mode: dark blue service badge & action buttons ----- */
+.applicant-service-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border: none;
+}
+
+[data-theme="dark"] .applicant-service-badge {
+  background-color: #1e3a5f !important;
+  color: #93c5fd !important;
+}
+
+/* Applicants table status badges – same design as Scholarship Applicants (pill, theme colors) */
+.applicant-status-badge,
+#applicantsTable .applicant-status-badge {
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  display: inline-block;
+}
+
+#applicantsTable .applicant-status-badge.bg-success,
+#applicantsTable .badge.bg-success {
+  background-color: var(--badge-success-bg) !important;
+  color: var(--badge-success-text) !important;
+}
+
+#applicantsTable .applicant-status-badge.bg-danger,
+#applicantsTable .badge.bg-danger {
+  background-color: var(--badge-danger-bg) !important;
+  color: var(--badge-danger-text) !important;
+}
+
+#applicantsTable .applicant-status-badge.bg-warning,
+#applicantsTable .applicant-status-badge.bg-warning.text-dark,
+#applicantsTable .badge.bg-warning.text-dark {
+  background-color: var(--badge-warning-bg) !important;
+  color: var(--badge-warning-text) !important;
+}
+
+/* View program modal text */
+.view-program-field {
+  color: var(--color-text-primary) !important;
+}
+
+.view-program-field strong {
+  color: var(--color-text-muted) !important;
+}
+
+.view-program-no-image {
+  color: var(--color-text-muted) !important;
+}
+
+/* Calendar icons in modals - white in dark mode */
+[class*="-modal"] .fa-calendar-alt,
+[class*="-modal"] .far.fa-calendar-alt,
+[class*="-modal"] i.fa-calendar-alt,
+.save-changes-modal-box .fa-calendar-alt,
+.save-changes-modal-box .far.fa-calendar-alt,
+.save-changes-modal-box i.fa-calendar-alt {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] [class*="-modal"] .fa-calendar-alt,
+[data-theme="dark"] [class*="-modal"] .far.fa-calendar-alt,
+[data-theme="dark"] [class*="-modal"] i.fa-calendar-alt,
+[data-theme="dark"] .save-changes-modal-box .fa-calendar-alt,
+[data-theme="dark"] .save-changes-modal-box .far.fa-calendar-alt,
+[data-theme="dark"] .save-changes-modal-box i.fa-calendar-alt {
+  color: var(--color-text-primary) !important;
+}
+
+/* Native date input calendar picker icon - white in dark mode */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+/* Number input spinner – dark background to match theme, custom up/down arrows */
+[data-theme="dark"] input[type="number"]::-webkit-inner-spin-button,
+[data-theme="dark"] input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  opacity: 1;
+  cursor: pointer;
+  width: 1.2em;
+  height: 100%;
+  background: var(--input-bg)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 2 L2 6 L10 6 Z M6 10 L2 6 L10 6 Z'/%3E%3C/svg%3E")
+    no-repeat center !important;
+  background-size: 0.6em 0.6em !important;
+}

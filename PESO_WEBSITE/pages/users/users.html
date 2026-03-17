@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>User Management</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/responsive-tables.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+      }
+
+      body {
+        background-color: var(--color-bg-body);
+        color: var(--color-text-primary);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Header Section */
+      .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .page-header h1 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 10px;
+      }
+
+      .page-header p {
+        color: var(--text-sub);
+        font-size: 16px;
+      }
+
+      /* Toolbar / Controls */
+      .toolbar {
+        background: var(--color-bg-card);
+        padding: 20px;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid var(--color-border-subtle);
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .search-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 300px;
+      }
+
+      .search-wrapper i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px 10px 10px 35px;
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        outline: none;
+        font-size: 14px;
+      }
+
+      .search-input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background-color: #1e293b;
+        color: white;
+        border: none;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      /* Table Styles */
+      .table-container {
+        background: var(--color-bg-card);
+        border-radius: 0 0 12px 12px;
+        border: 1px solid var(--color-border-subtle);
+        overflow-x: auto;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      thead {
+        background-color: var(--table-header-bg);
+        color: var(--table-header-text);
+      }
+
+      th {
+        text-align: left;
+        padding: 16px 24px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--table-row-border);
+        vertical-align: middle;
+        font-size: 14px;
+      }
+
+      tbody tr:hover {
+        background-color: var(--table-row-hover);
+      }
+
+      /* User Info Cell */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        background-color: #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .user-name {
+        font-weight: 500;
+        color: #111827;
+      }
+
+      .user-email {
+        color: #6b7280;
+      }
+
+      /* Status / Type Badges */
+      .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      /* Badge Color Variations */
+      .badge-green {
+        background: #dcfce7;
+        color: #166534;
+      } /* Active/Walk-in */
+      .badge-red {
+        background: #fee2e2;
+        color: #991b1b;
+      } /* Banned/Rejected */
+      .badge-blue {
+        background: #dbeafe;
+        color: #1e40af;
+      } /* Pending/Online */
+      .badge-orange {
+        background: #ffedd5;
+        color: #9a3412;
+      } /* Suspended */
+      .badge-gray {
+        background: #f3f4f6;
+        color: #374151;
+      } /* Inactive/N/A */
+
+      /* Actions Column */
+      .actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .action-icon {
+        cursor: pointer;
+        color: #9ca3af;
+        font-size: 16px;
+        transition: color 0.2s;
+      }
+
+      .action-icon:hover {
+        color: #3b82f6;
+      }
+
+      .action-icon.delete:hover {
+        color: #ef4444;
+      }
+
+      .action-icon.view:hover {
+        color: #3b82f6;
+      }
+
+      /* View User Modal - landscape rectangle, centered */
+      .view-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .view-modal-overlay.open {
+        display: flex;
+      }
+
+      .view-modal-box {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 1000px;
+        height: 70vh;
+        max-height: 560px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+      }
+
+      .view-modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #1e293b;
+        color: white;
+      }
+
+      .view-modal-header h2 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .view-modal-close {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 4px 8px;
+        font-size: 20px;
+        line-height: 1;
+        opacity: 0.9;
+      }
+
+      .view-modal-close:hover {
+        opacity: 1;
+      }
+
+      .view-modal-body {
+        flex: 1;
+        min-height: 0;
+      }
+
+      .view-modal-body iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 280px;
+        border: none;
+      }
+
+      /* Loading & Error States */
+      .loading {
+        text-align: center;
+        padding: 60px;
+        color: #6b7280;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-msg {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      /* Table Skeleton Loading */
+      @keyframes table-skeleton-shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      .table-skeleton-row {
+        display: table-row;
+      }
+
+      .table-skeleton-row td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--table-row-border);
+      }
+
+      .table-skeleton-cell {
+        background: linear-gradient(
+          90deg,
+          var(--color-bg-input) 0%,
+          var(--color-border-subtle) 50%,
+          var(--color-bg-input) 100%
+        );
+        background-size: 200% 100%;
+        animation: table-skeleton-shimmer 1.2s ease-in-out infinite;
+        border-radius: 6px;
+        height: 20px;
+      }
+
+      [data-theme="dark"] .table-skeleton-cell {
+        background: linear-gradient(
+          90deg,
+          var(--color-bg-input) 0%,
+          rgba(255, 255, 255, 0.06) 50%,
+          var(--color-bg-input) 100%
+        );
+        background-size: 200% 100%;
+      }
+
+      .table-skeleton-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+      }
+
+      .table-skeleton-name {
+        width: 150px;
+      }
+
+      .table-skeleton-email {
+        width: 200px;
+      }
+
+      .table-skeleton-badge {
+        width: 100px;
+      }
+
+      .table-skeleton-date {
+        width: 120px;
+      }
+
+      .table-skeleton-actions {
+        width: 50px;
+        margin-left: auto;
+      }
+
+      .table-skeleton-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .table-container.table-loaded .table-skeleton-row {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/announcements/announcements.html"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/job_applicants/job_applicants.html"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger"
+              ><i class="fas fa-sign-out-alt"></i><span> Exit</span></a
+            >
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="main-content px-4">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="input-group w-50"></div>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="container" style="max-width: 100%; padding: 0">
+            <div class="page-header">
+              <h1>User Management</h1>
+              <p>
+                Manage all users in one place. Monitor type of applicants and
+                access data.
+              </p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <div class="toolbar">
+              <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="searchBox"
+                  class="search-input"
+                  placeholder="Search users..."
+                />
+              </div>
+
+              <div class="action-buttons">
+                <button class="btn" id="refreshBtn">
+                  <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn">
+                  <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add User
+                </button>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-scroll-wrapper">
+                <table id="usersTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 50px"><input type="checkbox" /></th>
+                      <th>Full Name</th>
+                      <th>Email</th>
+                      <th>Type of Applicant</th>
+                      <th>Joined Date</th>
+                      <th style="text-align: right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    <!-- Skeleton rows -->
+                    <tr class="table-skeleton-row">
+                      <td>
+                        <div
+                          class="table-skeleton-cell"
+                          style="width: 20px; height: 20px"
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="table-skeleton-user-info">
+                          <div
+                            class="table-skeleton-cell table-skeleton-avatar"
+                          ></div>
+                          <div
+                            class="table-skeleton-cell table-skeleton-name"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-email"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-badge"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-date"
+                        ></div>
+                      </td>
+                      <td style="text-align: right">
+                        <div
+                          class="table-skeleton-cell table-skeleton-actions"
+                        ></div>
+                      </td>
+                    </tr>
+                    <tr class="table-skeleton-row">
+                      <td>
+                        <div
+                          class="table-skeleton-cell"
+                          style="width: 20px; height: 20px"
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="table-skeleton-user-info">
+                          <div
+                            class="table-skeleton-cell table-skeleton-avatar"
+                          ></div>
+                          <div
+                            class="table-skeleton-cell table-skeleton-name"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-email"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-badge"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-date"
+                        ></div>
+                      </td>
+                      <td style="text-align: right">
+                        <div
+                          class="table-skeleton-cell table-skeleton-actions"
+                        ></div>
+                      </td>
+                    </tr>
+                    <tr class="table-skeleton-row">
+                      <td>
+                        <div
+                          class="table-skeleton-cell"
+                          style="width: 20px; height: 20px"
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="table-skeleton-user-info">
+                          <div
+                            class="table-skeleton-cell table-skeleton-avatar"
+                          ></div>
+                          <div
+                            class="table-skeleton-cell table-skeleton-name"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-email"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-badge"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-date"
+                        ></div>
+                      </td>
+                      <td style="text-align: right">
+                        <div
+                          class="table-skeleton-cell table-skeleton-actions"
+                        ></div>
+                      </td>
+                    </tr>
+                    <tr class="table-skeleton-row">
+                      <td>
+                        <div
+                          class="table-skeleton-cell"
+                          style="width: 20px; height: 20px"
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="table-skeleton-user-info">
+                          <div
+                            class="table-skeleton-cell table-skeleton-avatar"
+                          ></div>
+                          <div
+                            class="table-skeleton-cell table-skeleton-name"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-email"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-badge"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-date"
+                        ></div>
+                      </td>
+                      <td style="text-align: right">
+                        <div
+                          class="table-skeleton-cell table-skeleton-actions"
+                        ></div>
+                      </td>
+                    </tr>
+                    <tr class="table-skeleton-row">
+                      <td>
+                        <div
+                          class="table-skeleton-cell"
+                          style="width: 20px; height: 20px"
+                        ></div>
+                      </td>
+                      <td>
+                        <div class="table-skeleton-user-info">
+                          <div
+                            class="table-skeleton-cell table-skeleton-avatar"
+                          ></div>
+                          <div
+                            class="table-skeleton-cell table-skeleton-name"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-email"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-badge"
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          class="table-skeleton-cell table-skeleton-date"
+                        ></div>
+                      </td>
+                      <td style="text-align: right">
+                        <div
+                          class="table-skeleton-cell table-skeleton-actions"
+                        ></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div
+                class="table-footer"
+                style="
+                  border-top-color: var(--table-row-border, #f3f4f6);
+                  color: var(--color-text-muted, #666);
+                "
+              >
+                <span class="table-footer-count">
+                  Showing <span id="filteredCount">0</span> of
+                  <span id="totalCount">0</span> rows
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View User Credentials Modal -->
+    <div id="viewModal" class="view-modal-overlay" aria-hidden="true">
+      <div class="view-modal-box">
+        <div class="view-modal-header">
+          <h2>User credentials</h2>
+          <button
+            type="button"
+            class="view-modal-close"
+            id="viewModalClose"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="view-modal-body">
+          <iframe id="viewPanelFrame" title="User credentials panel"></iframe>
+        </div>
+      </div>
+    </div>
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script type="module" src="/js/users.js"></script>
+  </body>
+</html>

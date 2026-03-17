@@ -1,0 +1,39 @@
+{
+  "rewrites": [
+    { "source": "/login", "destination": "/pages/login/login.html" },
+    {
+      "source": "/dashboard",
+      "destination": "/pages/dashboard/dashboard.html"
+    },
+    {
+      "source": "/announcements",
+      "destination": "/pages/announcements/announcements.html"
+    },
+    {
+      "source": "/announcement-form",
+      "destination": "/pages/announcements/announcement_form.html"
+    },
+    {
+      "source": "/job-applicants",
+      "destination": "/pages/job_applicants/job_applicants.html"
+    },
+    {
+      "source": "/applicant-details",
+      "destination": "/pages/job_applicants/applicant_details.html"
+    },
+    { "source": "/programs", "destination": "/pages/programs/programs.html" },
+    {
+      "source": "/scholarship-applied",
+      "destination": "/pages/scholarship_applied/scholarship_applied.html"
+    },
+    {
+      "source": "/scholarship-programs",
+      "destination": "/pages/scholarship_programs/scholarship_programs.html"
+    },
+    { "source": "/users", "destination": "/pages/users/users.html" },
+    {
+      "source": "/user-credentials-panel",
+      "destination": "/pages/users/user-credentials-panel.html"
+    }
+  ]
+}

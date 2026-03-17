@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Student/Job Dashboard</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+    <link rel="modulepreload" href="/js/dashboard/dashboard-counts.js" />
+    <link rel="modulepreload" href="/js/dashboard/dashboard-announcements.js" />
+    <link rel="modulepreload" href="/js/dashboard/dashboard-programs.js" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div
+      id="loadingContainer"
+      class="loading-overlay"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div class="loading-lottie"></div>
+      <p class="loading-text">Loading dashboard...</p>
+    </div>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html" class="active"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/announcements/announcements.html"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/job_applicants/job_applicants.html"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger">
+              <i class="fas fa-sign-out-alt"></i><span> Exit</span>
+            </a>
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+
+        <div class="main-content px-4 dashboard-loading">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="dashboard-search-wrapper">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input
+                  type="search"
+                  id="dashboardSearch"
+                  class="dashboard-search-input"
+                  placeholder="Search..."
+                  autocomplete="off"
+                  aria-label="Search"
+                />
+              </div>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div
+                id="statCardTotal"
+                class="card stat-card card-applications p-3"
+              >
+                <div class="stat-card-skeleton" aria-hidden="true">
+                  <div class="skeleton skeleton-line"></div>
+                  <div class="skeleton skeleton-sub"></div>
+                </div>
+                <h6>Total Applicants</h6>
+                <div class="stat-count-area">
+                  <h2 id="statTotalCount">—</h2>
+                  <span id="statTotalTrend" class="stat-trend-wrapper"></span>
+                </div>
+                <div
+                  class="stat-empty-state stat-empty-hidden"
+                  id="statEmptyTotal"
+                >
+                  <span class="stat-empty-icon"
+                    ><i class="fas fa-inbox"></i
+                  ></span>
+                  <span class="stat-empty-text">No applicants yet</span>
+                  <a
+                    href="/pages/job_applicants/job_applicants.html"
+                    class="stat-empty-cta"
+                    >View applicants</a
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div id="statCardJob" class="card stat-card card-interviews p-3">
+                <div class="stat-card-skeleton" aria-hidden="true">
+                  <div class="skeleton skeleton-line"></div>
+                  <div class="skeleton skeleton-sub"></div>
+                </div>
+                <h6>Job Applicants</h6>
+                <div class="stat-count-area">
+                  <h2 id="statJobCount">—</h2>
+                  <span id="statJobTrend" class="stat-trend-wrapper"></span>
+                </div>
+                <div
+                  class="stat-empty-state stat-empty-hidden"
+                  id="statEmptyJob"
+                >
+                  <span class="stat-empty-icon"
+                    ><i class="fas fa-briefcase"></i
+                  ></span>
+                  <span class="stat-empty-text">No job applicants yet</span>
+                  <a
+                    href="/pages/job_applicants/job_applicants.html"
+                    class="stat-empty-cta"
+                    >View job applicants</a
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div
+                id="statCardScholarship"
+                class="card stat-card card-pending p-3"
+              >
+                <div class="stat-card-skeleton" aria-hidden="true">
+                  <div class="skeleton skeleton-line"></div>
+                  <div class="skeleton skeleton-sub"></div>
+                </div>
+                <h6>Scholarship Applicants</h6>
+                <div class="stat-count-area">
+                  <h2 id="statScholarshipCount">—</h2>
+                  <span
+                    id="statScholarshipTrend"
+                    class="stat-trend-wrapper"
+                  ></span>
+                </div>
+                <div
+                  class="stat-empty-state stat-empty-hidden"
+                  id="statEmptyScholarship"
+                >
+                  <span class="stat-empty-icon"
+                    ><i class="fas fa-graduation-cap"></i
+                  ></span>
+                  <span class="stat-empty-text"
+                    >No scholarship applicants yet</span
+                  >
+                  <a
+                    href="/pages/scholarship_applied/scholarship_applied.html"
+                    class="stat-empty-cta"
+                    >View scholarship applicants</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row dashboard-carousel-row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Announcements Posted</h5>
+                  <div
+                    id="dashboardAnnouncementsCarousel"
+                    class="dashboard-carousel-outer dashboard-carousel-loading"
+                  >
+                    <div class="dashboard-carousel-skeleton">
+                      <div class="dashboard-carousel-skeleton-item">
+                        <div class="skeleton skeleton-cat"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-desc"></div>
+                        <div class="skeleton skeleton-date"></div>
+                      </div>
+                      <div class="dashboard-carousel-skeleton-item">
+                        <div class="skeleton skeleton-cat"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-desc"></div>
+                        <div class="skeleton skeleton-date"></div>
+                      </div>
+                      <div class="dashboard-carousel-skeleton-item">
+                        <div class="skeleton skeleton-cat"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-desc"></div>
+                        <div class="skeleton skeleton-date"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row dashboard-carousel-row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">
+                    Programs &amp; Scholarship Programs
+                  </h5>
+                  <div
+                    id="dashboardProgramsCarousel"
+                    class="dashboard-carousel-outer dashboard-carousel-loading"
+                  >
+                    <div class="dashboard-carousel-skeleton">
+                      <div class="dashboard-program-skeleton-item">
+                        <div class="skeleton"></div>
+                      </div>
+                      <div class="dashboard-program-skeleton-item">
+                        <div class="skeleton"></div>
+                      </div>
+                      <div class="dashboard-program-skeleton-item">
+                        <div class="skeleton"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-4">Applicant Trends</h5>
+                  <div class="chart-container">
+                    <div class="chart-skeleton" aria-hidden="true">
+                      <div class="skeleton-chart-bars">
+                        <span></span><span></span><span></span><span></span
+                        ><span></span><span></span>
+                      </div>
+                    </div>
+                    <canvas id="lineChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-4">Status</h5>
+                  <div class="chart-container">
+                    <div class="chart-skeleton" aria-hidden="true">
+                      <div class="skeleton-chart-bars">
+                        <span></span><span></span><span></span><span></span
+                        ><span></span><span></span>
+                      </div>
+                    </div>
+                    <canvas id="pieChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-4">Hiring Overview</h5>
+                  <div class="chart-container">
+                    <div class="chart-skeleton" aria-hidden="true">
+                      <div class="skeleton-chart-bars">
+                        <span></span><span></span><span></span><span></span
+                        ><span></span><span></span>
+                      </div>
+                    </div>
+                    <canvas id="barChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script src="/js/dashboard/charts.js"></script>
+    <script type="module" src="/js/dashboard/dashboard-data.js"></script>
+  </body>
+</html>

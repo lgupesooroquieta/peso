@@ -1,0 +1,123 @@
+/**
+ * Shared responsive table styles for Announcements, Programs, Applicants,
+ * Scholarship Programs, Scholarship Applicants, and Users.
+ * - Horizontal scroll on small viewports when table has min-width
+ * - Compact padding and font sizes on narrow screens
+ * - Touch-friendly scroll and footer stacking
+ */
+
+/* Scroll wrapper: horizontal and vertical scroll with touch support */
+.table-container .table-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 560px;
+}
+
+/* Responsive: compact table cells and footer on small screens */
+@media (max-width: 768px) {
+  .table-container th,
+  .table-container td,
+  .table-container .table-scroll-wrapper th,
+  .table-container .table-scroll-wrapper td,
+  .announcements-table th,
+  .announcements-table td,
+  .programs-table th,
+  .programs-table td,
+  .scholarship-table th,
+  .scholarship-table td,
+  .scholarship-programs-table th,
+  .scholarship-programs-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .table-container th,
+  .announcements-table th,
+  .programs-table th,
+  .scholarship-table th,
+  .scholarship-programs-table th {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+
+  .table-footer {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  .table-pagination {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .pagination-link,
+  .pagination-label {
+    font-size: 12px;
+  }
+
+  /* Action buttons in table: slightly smaller on mobile */
+  .table-container tbody .btn,
+  .table-scroll-wrapper tbody .btn,
+  .announcements-table tbody .btn,
+  .programs-table tbody .btn,
+  .scholarship-table tbody .btn {
+    padding: 8px 12px;
+    min-height: 36px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-container th,
+  .table-container td,
+  .table-container .table-scroll-wrapper th,
+  .table-container .table-scroll-wrapper td,
+  .announcements-table th,
+  .announcements-table td,
+  .programs-table th,
+  .programs-table td,
+  .scholarship-table th,
+  .scholarship-table td,
+  .scholarship-programs-table th,
+  .scholarship-programs-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .table-container th,
+  .announcements-table th,
+  .programs-table th,
+  .scholarship-table th,
+  .scholarship-programs-table th {
+    font-size: 10px;
+  }
+
+  .table-footer {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .table-pagination {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .table-container tbody .btn,
+  .table-scroll-wrapper tbody .btn,
+  .announcements-table tbody .btn,
+  .programs-table tbody .btn,
+  .scholarship-table tbody .btn {
+    padding: 6px 10px;
+    min-height: 34px;
+    font-size: 12px;
+  }
+
+  /* Stack action buttons vertically or allow wrap on very small screens */
+  .table-container tbody td:last-child .btn + .btn,
+  .table-scroll-wrapper tbody td:last-child .btn + .btn {
+    margin-left: 6px;
+  }
+}

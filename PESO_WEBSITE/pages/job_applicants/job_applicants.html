@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Applicants | PESO</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/job_applicants/job-applicants.css" />
+    <link rel="stylesheet" href="/css/responsive-tables.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div
+      id="loadingContainer"
+      class="loading-overlay"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div class="loading-lottie"></div>
+      <p class="loading-text">Loading job applicants...</p>
+    </div>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/announcements/announcements.html"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a
+                    href="/pages/job_applicants/job_applicants.html"
+                    class="active"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger"
+              ><i class="fas fa-sign-out-alt"></i><span> Exit</span></a
+            >
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="main-content px-4">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="container" style="max-width: 100%; padding: 0">
+            <div class="page-header">
+              <h1>Applicants</h1>
+              <p>
+                View and manage all applicants. Search, filter by date, and add
+                new job programs for referral.
+              </p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <div class="applicants-top-section">
+              <div class="applicants-top-row applicants-top-search-row">
+                <div class="search-wrapper">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="searchBox"
+                    class="search-input"
+                    placeholder="Search applicants, programs..."
+                  />
+                </div>
+                <div class="applicants-top-right">
+                  <div class="date-filter-group program-type-filter-group">
+                    <i class="fas fa-filter"></i>
+                    <div
+                      class="custom-dropdown"
+                      id="applicantProgramTypeDropdown"
+                    >
+                      <div class="dropdown-selected">
+                        <span id="applicantProgramTypeSelectedLabel"
+                          >All types</span
+                        >
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="" class="active">All types</li>
+                        <li data-value="SPES">SPES</li>
+                        <li data-value="GIP">GIP</li>
+                        <li data-value="TUPAD">TUPAD</li>
+                        <li data-value="JobStart">JobStart</li>
+                        <li data-value="Other">Other</li>
+                      </ul>
+                    </div>
+                    <input
+                      type="hidden"
+                      id="applicantProgramTypeFilter"
+                      value=""
+                    />
+                  </div>
+                  <div class="date-filter-group applicants-date-inline">
+                    <i class="far fa-calendar-alt"></i>
+                    <div class="custom-dropdown" id="customDateDropdown">
+                      <div class="dropdown-selected">
+                        <span id="currentDateFilter">All Time</span>
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="all" class="active">All Time</li>
+                        <li data-value="week">This Week</li>
+                        <li data-value="month">This Month</li>
+                        <li data-value="year">This Year</li>
+                        <li data-value="custom">Custom Date Range</li>
+                      </ul>
+                    </div>
+                    <input type="hidden" id="filterDateRange" value="all" />
+                    <div
+                      id="customDateInputs"
+                      class="custom-date-container hidden"
+                    >
+                      <input
+                        type="date"
+                        id="dateFrom"
+                        class="date-input-small"
+                      />
+                      <span>-</span>
+                      <input type="date" id="dateTo" class="date-input-small" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="applicants-top-row applicants-top-filters-row">
+                <div class="applicants-filters-single-row">
+                  <span class="applicant-filter-th">Status</span>
+                  <div
+                    class="applicant-filter-cells"
+                    id="applicantStatusPills"
+                    role="group"
+                    aria-label="Filter by status"
+                  >
+                    <button
+                      type="button"
+                      class="applicant-filter-cell active"
+                      data-value=""
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      class="applicant-filter-cell"
+                      data-value="In Progress"
+                    >
+                      In Progress
+                    </button>
+                    <button
+                      type="button"
+                      class="applicant-filter-cell"
+                      data-value="Approved"
+                    >
+                      Approved
+                    </button>
+                    <button
+                      type="button"
+                      class="applicant-filter-cell"
+                      data-value="Declined"
+                    >
+                      Declined
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="applicantStatusFilter" value="" />
+            </div>
+
+            <div
+              id="applicantInfoModal"
+              class="applicant-info-modal-overlay"
+              aria-hidden="true"
+            >
+              <div class="applicant-info-modal-box">
+                <button
+                  type="button"
+                  class="applicant-info-modal-close js-close-applicant-modal"
+                  aria-label="Close"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+
+                <div class="applicant-info-header-new">
+                  <div class="applicant-info-photo-wrap">
+                    <img
+                      id="modalApplicantPhoto"
+                      src=""
+                      alt="Applicant photo"
+                      class="applicant-info-photo"
+                      style="display: none"
+                    />
+                    <div
+                      id="modalApplicantPhotoPlaceholder"
+                      class="applicant-info-photo-placeholder"
+                    >
+                      <i class="fas fa-user"></i>
+                    </div>
+                  </div>
+                  <div class="applicant-info-header-text">
+                    <h2 id="modalApplicantName">—</h2>
+                    <p class="applicant-info-contact-line">
+                      <span id="modalApplicantEmail">—</span> ·
+                      <span id="modalApplicantContact">—</span>
+                    </p>
+                    <div class="applicant-info-badges-row">
+                      <span
+                        class="applicant-info-status-badge"
+                        id="modalApplicantStatusBadge"
+                      ></span>
+                      <span
+                        class="applicant-info-program-badge"
+                        id="modalApplicantProgramBadge"
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="applicant-info-modal-body">
+                  <div
+                    id="applicantInfoModalLoading"
+                    class="applicant-info-loading"
+                  >
+                    <div class="applicant-info-loading-spinner"></div>
+                    <p>Loading...</p>
+                  </div>
+
+                  <div
+                    id="applicantInfoModalContent"
+                    class="applicant-info-content"
+                    style="display: none"
+                  >
+                    <div class="applicant-info-tabs">
+                      <button
+                        class="applicant-tab active"
+                        data-target="tab-personal"
+                      >
+                        Personal
+                      </button>
+                      <button class="applicant-tab" data-target="tab-address">
+                        Address
+                      </button>
+                      <button class="applicant-tab" data-target="tab-other">
+                        Other Info
+                      </button>
+                    </div>
+
+                    <div class="applicant-tab-content active" id="tab-personal">
+                      <div class="applicant-info-grid grid-cols-3">
+                        <!-- Column 1 -->
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">First Name</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantFirstName"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Suffix</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantSuffix"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Religion</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantReligion"
+                            >—</span
+                          >
+                        </div>
+                        <!-- Column 2 -->
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Middle Name</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantMiddleName"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Birthdate</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantDob"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Civil Status</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantCivilStatus"
+                            >—</span
+                          >
+                        </div>
+                        <!-- Column 3 -->
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Surname</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantSurname"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Sex</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantSex"
+                            >—</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="applicant-tab-content" id="tab-address">
+                      <div class="applicant-info-grid grid-cols-2">
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label"
+                            >House / Street</span
+                          >
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantHouseStreet"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Barangay</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantBarangay"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label"
+                            >Municipality / City</span
+                          >
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantMunicipalityCity"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Province</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantProvince"
+                            >—</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="applicant-tab-content" id="tab-other">
+                      <div class="applicant-info-grid grid-cols-2">
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label"
+                            >Employment Status</span
+                          >
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantEmployment"
+                            >—</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">TIN</span>
+                          <span
+                            class="applicant-info-value text-muted"
+                            id="modalApplicantTin"
+                            style="font-style: italic"
+                            >Not provided</span
+                          >
+                        </div>
+                        <div class="applicant-info-item">
+                          <span class="applicant-info-label">Disability</span>
+                          <span
+                            class="applicant-info-value"
+                            id="modalApplicantDisability"
+                            >—</span
+                          >
+                        </div>
+                        <div
+                          class="applicant-info-item applicant-info-item-full"
+                        >
+                          <span class="applicant-info-label"
+                            >Reason For Applying</span
+                          >
+                          <span
+                            class="applicant-info-value applicant-info-value-reason"
+                            id="modalApplicantReason"
+                            >—</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    id="applicantInfoModalError"
+                    class="applicant-info-error"
+                    style="display: none"
+                  >
+                    <p>Failed to load applicant details.</p>
+                  </div>
+
+                  <div
+                    id="applicantInfoEditContent"
+                    class="applicant-info-edit-content"
+                    style="display: none"
+                  >
+                    <form
+                      id="applicantEditForm"
+                      class="applicant-info-edit-form"
+                    >
+                      <div class="applicant-info-edit-grid">
+                        <div class="applicant-info-edit-item">
+                          <label>Surname</label>
+                          <input type="text" id="editSurname" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>First Name</label>
+                          <input type="text" id="editFirstName" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Middle Name</label>
+                          <input type="text" id="editMiddleName" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Suffix</label>
+                          <input type="text" id="editSuffix" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Birthdate</label>
+                          <input type="date" id="editDateOfBirth" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Sex</label>
+                          <select id="editSex">
+                            <option value="">—</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                          </select>
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Religion</label>
+                          <input type="text" id="editReligion" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Civil Status</label>
+                          <select id="editCivilStatus">
+                            <option value="">—</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Separated">Separated</option>
+                          </select>
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>House/Street</label>
+                          <input type="text" id="editHouseStreet" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Barangay</label>
+                          <input type="text" id="editBarangay" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Municipality/City</label>
+                          <input type="text" id="editMunicipalityCity" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Province</label>
+                          <input type="text" id="editProvince" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Contact Number</label>
+                          <input type="text" id="editContactNumber" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Email</label>
+                          <input type="email" id="editEmail" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>TIN</label>
+                          <input type="text" id="editTin" />
+                        </div>
+                        <div class="applicant-info-edit-item">
+                          <label>Employment Status</label>
+                          <select id="editEmployed">
+                            <option value="">—</option>
+                            <option value="true">Employed</option>
+                            <option value="false">Unemployed</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="applicant-info-edit-actions">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary js-cancel-edit"
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                          <i class="fas fa-save"></i> Save
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="applicant-info-footer">
+                  <a
+                    id="modalViewNsrpLink"
+                    href="#"
+                    class="btn btn-outline-secondary"
+                    target="_blank"
+                    style="display: none"
+                  >
+                    <i class="fas fa-file-alt"></i> View NSRP
+                  </a>
+                  <button
+                    type="button"
+                    class="btn btn-primary js-edit-applicant-personal"
+                    style="display: none"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="approveModal"
+              class="approve-modal-overlay"
+              aria-hidden="true"
+            >
+              <div class="approve-modal-box">
+                <div class="approve-modal-header">
+                  <h3>Approve Applicant</h3>
+                  <button
+                    type="button"
+                    class="approve-modal-close js-close-approve-modal"
+                    aria-label="Close"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="approve-modal-body">
+                  <p>Are you sure you want to approve this applicant?</p>
+                </div>
+                <div class="approve-modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-success js-confirm-approve"
+                    id="approveConfirmBtn"
+                  >
+                    <i class="fas fa-check-circle"></i>
+                    <span class="btn-text">Approve</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="saveChangesModal"
+              class="save-changes-modal-overlay"
+              aria-hidden="true"
+            >
+              <div class="save-changes-modal-box">
+                <div class="save-changes-modal-header">
+                  <h3>Save Changes</h3>
+                  <button
+                    type="button"
+                    class="save-changes-modal-close js-close-save-changes-modal"
+                    aria-label="Close"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="save-changes-modal-body">
+                  <p>Are you sure you want to save these changes?</p>
+                </div>
+                <div class="save-changes-modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-primary js-confirm-save-changes"
+                    id="saveChangesConfirmBtn"
+                  >
+                    <i class="fas fa-save"></i>
+                    <span class="btn-text">Save Changes</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="declineModal"
+              class="decline-modal-overlay"
+              aria-hidden="true"
+            >
+              <div class="decline-modal-box">
+                <div class="decline-modal-header">
+                  <h3>Decline Applicant</h3>
+                  <button
+                    type="button"
+                    class="decline-modal-close js-close-decline-modal"
+                    aria-label="Close"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="decline-modal-body">
+                  <label for="declineRemarks"
+                    >Remarks (reason for denial)</label
+                  >
+                  <textarea
+                    id="declineRemarks"
+                    placeholder="Enter remarks for why the applicant is denied..."
+                    rows="4"
+                  ></textarea>
+                </div>
+                <div class="decline-modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-danger js-confirm-decline"
+                    id="declineConfirmBtn"
+                  >
+                    <i class="fas fa-times-circle"></i>
+                    <span class="btn-text">Decline</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-scroll-wrapper">
+                <table id="applicantsTable" style="display: none">
+                  <thead>
+                    <tr>
+                      <th style="text-align: start">Applicant</th>
+                      <th style="text-align: center">Service Applied</th>
+                      <th style="text-align: center">Applied Date</th>
+                      <th style="text-align: center">Status</th>
+                      <th style="text-align: center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="applicantsTableBody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer">
+                <span class="table-footer-count">
+                  Showing <span id="filteredCount">0</span> of
+                  <span id="totalCount">0</span> applicants
+                </span>
+                <div class="table-pagination">
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="paginationPrev"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    <i class="fas fa-chevron-left"></i> Prev
+                  </span>
+                  <span id="paginationLabel" class="pagination-label"
+                    >Page 1 of 1</span
+                  >
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="paginationNext"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    Next <i class="fas fa-chevron-right"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/toast.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script type="module" src="/js/job_applicants/applicants_list.js"></script>
+    <script type="module" src="/js/job_applicants/applicants_core.js"></script>
+  </body>
+</html>

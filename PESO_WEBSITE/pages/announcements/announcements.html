@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peso-admin-theme");
+          var theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : window.matchMedia &&
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("peso-sidebar-collapsed") === "1") {
+            document.documentElement.setAttribute(
+              "data-sidebar-collapsed",
+              "1",
+            );
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <title>Announcements | PESO</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <link rel="stylesheet" href="/css/theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/job_applicants/job-applicants.css" />
+    <link rel="stylesheet" href="/css/announcements/announcements.css" />
+    <link rel="stylesheet" href="/css/responsive-tables.css" />
+    <link rel="stylesheet" href="/css/loading-overlay.css" />
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
+    <script>
+      try {
+        if (localStorage.getItem("peso-sidebar-collapsed") === "1")
+          document.body.classList.add("sidebar-collapsed");
+      } catch (e) {}
+    </script>
+    <div
+      id="loadingContainer"
+      class="loading-overlay"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div class="loading-lottie"></div>
+      <p class="loading-text">Loading announcements...</p>
+    </div>
+    <div class="container-fluid">
+      <div class="row layout-row">
+        <div class="sidebar-overlay" aria-hidden="true"></div>
+        <div class="sidebar-wrapper">
+          <div class="sidebar p-0">
+            <div class="logo d-flex align-items-center py-3 px-2">
+              <img
+                src="/src/images/peso_seal.png"
+                alt="PESO Seal"
+                class="me-2"
+                style="width: 40px; height: 40px; object-fit: contain"
+              />
+              <span
+                class="logo-text font-weight-bold h3 mb-0"
+                style="margin-left: 15px"
+                >PESO</span
+              >
+            </div>
+            <nav class="mt-3">
+              <ul>
+                <li class="nav-item">
+                  <a href="/pages/dashboard/dashboard.html"
+                    ><i class="fas fa-home"></i
+                    ><span class="nav-link-text"> Dashboard</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a
+                    href="/pages/announcements/announcements.html"
+                    class="active"
+                    ><i class="fas fa-bullhorn"></i
+                    ><span class="nav-link-text"> Announcements</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/programs/programs.html"
+                    ><i class="fas fa-clipboard-list"></i
+                    ><span class="nav-link-text"> Programs</span></a
+                  >
+                </li>
+                <li class="nav-item has-submenu">
+                  <a href="#"
+                    ><i class="fas fa-graduation-cap"></i
+                    ><span class="nav-link-text"> Scholarship</span
+                    ><i class="fas fa-chevron-right submenu-arrow"></i
+                  ></a>
+                  <ul class="nav-submenu">
+                    <li>
+                      <a
+                        href="/pages/scholarship_programs/scholarship_programs.html"
+                        ><i class="fas fa-book-open"></i> Scholarship
+                        Programs</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/pages/scholarship_applied/scholarship_applied.html"
+                        ><i class="fas fa-user-graduate"></i> Scholarship
+                        Applicants</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/job_applicants/job_applicants.html"
+                    ><i class="fas fa-briefcase"></i
+                    ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <a href="/pages/login/login.html" class="exit-link text-danger"
+              ><i class="fas fa-sign-out-alt"></i><span> Exit</span></a
+            >
+          </div>
+          <button
+            type="button"
+            class="sidebar-toggle"
+            aria-label="Collapse sidebar"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="main-content px-4">
+          <div class="row top-bar mb-4">
+            <div class="col-md-6 d-flex align-items-center">
+              <button
+                type="button"
+                class="burger-btn me-3"
+                aria-label="Open menu"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <button
+                type="button"
+                class="theme-toggle-btn"
+                aria-label="Switch to dark mode"
+              >
+                <i class="fas fa-moon"></i>
+              </button>
+              <i class="fas fa-bell me-3 text-secondary"></i>
+              <i class="fas fa-user-circle fa-lg text-secondary"></i>
+            </div>
+          </div>
+
+          <div class="container" style="max-width: 100%; padding: 0">
+            <div class="page-header">
+              <h1>Announcements</h1>
+              <p>
+                Manage announcements for jobs, scholarships, and general
+                updates.
+              </p>
+            </div>
+
+            <div id="errorContainer"></div>
+
+            <div class="announcements-top-section">
+              <div class="announcements-top-row announcements-top-search-row">
+                <div class="search-wrapper">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="announcementsSearchBox"
+                    class="search-input"
+                    placeholder="Search title, description, category..."
+                  />
+                </div>
+                <div class="announcements-top-right">
+                  <div class="date-filter-group program-type-filter-group">
+                    <i class="fas fa-tag"></i>
+                    <div
+                      class="custom-dropdown"
+                      id="announcementsCategoryDropdown"
+                    >
+                      <div class="dropdown-selected">
+                        <span id="announcementsCategorySelectedLabel"
+                          >All types</span
+                        >
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="" class="active">All types</li>
+                        <li data-value="PESO UPDATE">PESO UPDATE</li>
+                        <li data-value="Training">Training</li>
+                        <li data-value="Tips">Tips</li>
+                        <li data-value="Other">Other</li>
+                      </ul>
+                    </div>
+                    <input
+                      type="hidden"
+                      id="announcementsCategoryFilter"
+                      value=""
+                    />
+                  </div>
+                  <div class="date-filter-group announcements-date-inline">
+                    <i class="far fa-calendar-alt"></i>
+                    <div class="custom-dropdown" id="announcementsDateDropdown">
+                      <div class="dropdown-selected">
+                        <span id="announcementsCurrentDateFilter"
+                          >All Time</span
+                        >
+                        <i
+                          class="fas fa-chevron-down ms-2"
+                          style="font-size: 10px"
+                        ></i>
+                      </div>
+                      <ul class="dropdown-options">
+                        <li data-value="all" class="active">All Time</li>
+                        <li data-value="week">This Week</li>
+                        <li data-value="month">This Month</li>
+                        <li data-value="year">This Year</li>
+                        <li data-value="custom">Custom Date Range</li>
+                      </ul>
+                    </div>
+                    <input
+                      type="hidden"
+                      id="announcementsFilterDateRange"
+                      value="all"
+                    />
+                    <div
+                      id="announcementsCustomDateInputs"
+                      class="custom-date-container hidden"
+                    >
+                      <input
+                        type="date"
+                        id="announcementsDateFrom"
+                        class="date-input-small"
+                      />
+                      <span>-</span>
+                      <input
+                        type="date"
+                        id="announcementsDateTo"
+                        class="date-input-small"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    id="openAddAnnouncementModalBtn"
+                    class="btn btn-indigo btn-announcement-add"
+                  >
+                    <i class="fas fa-plus"></i> Add Announcement
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="announcements-cards-container">
+              <div
+                id="announcementsCardsList"
+                class="announcements-cards-list"
+                role="list"
+                aria-label="Announcements list"
+              ></div>
+
+              <div class="announcements-cards-footer">
+                <span class="table-footer-count">
+                  Showing <span id="announcementsCount">0</span> of
+                  <span id="announcementsTotalCount">0</span> announcement(s)
+                </span>
+                <div class="table-pagination">
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="announcementsPaginationPrev"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    <i class="fas fa-chevron-left"></i> Previous Page
+                  </span>
+                  <span
+                    id="announcementsPaginationLabel"
+                    class="pagination-label"
+                    >Page 1 of 1</span
+                  >
+                  <span
+                    role="button"
+                    tabindex="0"
+                    id="announcementsPaginationNext"
+                    class="pagination-link"
+                    aria-disabled="true"
+                  >
+                    Next Page <i class="fas fa-chevron-right"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="addAnnouncementModal"
+      class="announcement-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="announcement-modal-box design-update">
+        <div class="announcement-modal-header">
+          <h2>
+            <i class="fas fa-briefcase" style="margin-right: 8px"></i>
+            Add Announcement
+          </h2>
+          <div class="header-actions">
+            <button
+              type="button"
+              class="btn-clear"
+              id="addAnnouncementClearBtn"
+            >
+              <i class="fas fa-trash-alt"></i> Clear
+            </button>
+            <button
+              type="button"
+              class="btn-close-modal"
+              id="addAnnouncementModalClose"
+              aria-label="Close"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="announcement-modal-body p-0">
+          <div
+            id="addAnnouncementFormMessage"
+            class="announcement-form-message d-none m-3"
+            role="alert"
+          ></div>
+
+          <form id="addAnnouncementForm" class="announcement-form-layout">
+            <input type="hidden" id="announcementId" value="" />
+
+            <div class="announcement-form-columns">
+              <div class="form-layout-left">
+                <label
+                  for="modalAnnouncementImage"
+                  class="banner-upload-container"
+                  id="modalAnnouncementBannerUploadArea"
+                >
+                  <div
+                    class="upload-placeholder"
+                    id="modalAnnouncementBannerPlaceholder"
+                  >
+                    <i class="fas fa-upload upload-icon"></i>
+                    <p class="upload-title">Upload Banner Photo</p>
+                    <p class="upload-subtitle">
+                      Click to browse or drag & drop
+                    </p>
+                  </div>
+
+                  <input
+                    type="file"
+                    id="modalAnnouncementImage"
+                    name="announcementImage"
+                    accept="image/*"
+                    class="visually-hidden"
+                    style="
+                      position: absolute;
+                      width: 1px;
+                      height: 1px;
+                      overflow: hidden;
+                      clip: rect(1px, 1px, 1px, 1px);
+                    "
+                  />
+
+                  <img
+                    src=""
+                    alt="Photo Preview"
+                    class="banner-preview-img"
+                    id="modalAnnouncementBannerPreview"
+                  />
+
+                  <button
+                    type="button"
+                    class="banner-remove-img-btn"
+                    id="modalAnnouncementBannerRemoveBtn"
+                    aria-label="Remove image"
+                    title="Remove image"
+                  >
+                    <i class="fas fa-times"></i> Remove image
+                  </button>
+                </label>
+
+                <div class="upload-hint text-center mt-3">
+                  Recommended: JPG or PNG<br />at least 600 x 800px
+                </div>
+              </div>
+
+              <div class="form-layout-right">
+                <div class="form-group">
+                  <label for="modalTitle"
+                    >Announcement Title <span class="required">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="modalTitle"
+                    name="title"
+                    required
+                    placeholder="e.g. Job Fair 2026"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="modalCategory"
+                    >Category / Type <span class="required">*</span></label
+                  >
+                  <div class="select-wrapper">
+                    <select id="modalCategory" name="category" required>
+                      <option value="">Select Category</option>
+                      <option value="PESO UPDATE">PESO UPDATE</option>
+                      <option value="Training">Training</option>
+                      <option value="Tips">Tips</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                  </div>
+                  <div
+                    id="modalCustomCategoryContainer"
+                    style="display: none; margin-top: 8px"
+                  >
+                    <input
+                      type="text"
+                      id="modalCustomCategory"
+                      placeholder="Enter custom category name"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="modalDescription"
+                    >Description <span class="required">*</span></label
+                  >
+                  <textarea
+                    id="modalDescription"
+                    name="description"
+                    required
+                    placeholder="Provide an overview of the announcement..."
+                    rows="4"
+                    style="resize: vertical"
+                  ></textarea>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="modalDisplayDate">Display Date</label>
+                    <input
+                      type="date"
+                      id="modalDisplayDate"
+                      name="displayDate"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="modalTargetIntent">Target Audience</label>
+                    <div class="select-wrapper">
+                      <select id="modalTargetIntent" name="targetIntent" required>
+                        <option value="both">All Applicants</option>
+                        <option value="job">Job Seekers</option>
+                        <option value="scholarship">Scholars</option>
+                      </select>
+                      <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="document.getElementById('addAnnouncementModalClose').click()"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary btn-publish"
+                id="addAnnouncementSubmitBtn"
+              >
+                <i class="fas fa-paper-plane"></i> Save Announcement
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <div
+      id="saveChangesModal"
+      class="save-changes-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="save-changes-modal-box">
+        <div class="save-changes-modal-header">
+          <h3>Save Changes</h3>
+          <button
+            type="button"
+            class="save-changes-modal-close js-close-save-changes-modal"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="save-changes-modal-body">
+          <p>Are you sure you want to save these changes?</p>
+        </div>
+        <div class="save-changes-modal-footer">
+          <button
+            type="button"
+            class="btn btn-primary js-confirm-save-changes"
+            id="saveChangesConfirmBtn"
+          >
+            <i class="fas fa-save"></i>
+            <span class="btn-text">Save Changes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="viewAnnouncementModal"
+      class="announcement-view-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="announcement-view-modal-box landscape-layout">
+        <button
+          type="button"
+          class="announcement-view-modal-close top-right"
+          id="viewAnnouncementModalClose"
+          aria-label="Close"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <div
+          id="viewAnnouncementContent"
+          class="announcement-view-modal-content"
+        ></div>
+      </div>
+    </div>
+
+    <div
+      id="deleteConfirmOverlay"
+      class="delete-confirm-overlay"
+      style="display: none"
+      aria-hidden="true"
+    >
+      <div class="delete-confirm-box">
+        <h3>Delete announcement?</h3>
+        <p id="deleteConfirmMessage">This action cannot be undone.</p>
+        <div class="delete-confirm-actions">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            id="deleteConfirmCancel"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="deleteConfirmOk">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/utils/theme.js"></script>
+    <script src="/js/utils/sidebar.js"></script>
+    <script type="module" src="/js/authentication/logout.js"></script>
+    <script src="/js/utils/toast.js"></script>
+    <script src="/js/utils/loading.js"></script>
+    <script
+      type="module"
+      src="/js/announcements/announcements_list.js"
+    ></script>
+  </body>
+</html>
