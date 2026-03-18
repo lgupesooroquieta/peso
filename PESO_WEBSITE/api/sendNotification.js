@@ -1,13 +1,11 @@
 /**
  * Vercel Serverless Function: /api/sendNotification
  *
- * Keeps OneSignal REST API key server-side (do NOT expose in frontend JS).
+ * Configure env vars in Vercel:
+ * - ONESIGNAL_APP_ID
+ * - ONESIGNAL_REST_API_KEY
  *
- * Configure these environment variables in Vercel:
- * - ONESIGNAL_REST_API_KEY  (secret)
- * - ONESIGNAL_APP_ID       (public, but fine to keep here too)
- *
- * Request (POST JSON):
+ * POST JSON:
  * {
  *   "event": "announcement_added",
  *   "title": "Title",
@@ -24,11 +22,21 @@ function toStr(v) {
   return typeof v === "string" ? v : v == null ? "" : String(v);
 }
 
-function buildPayload({ appId, title, message, announcementId, targetIntent, category }) {
+function buildPayload({
+  appId,
+  title,
+  message,
+  announcementId,
+  targetIntent,
+  category,
+}) {
   const intent = toStr(targetIntent).trim().toLowerCase();
   const headings = { en: toStr(category).trim() || "Announcement" };
   const contents = {
-    en: toStr(message).trim() || toStr(title).trim() || "You have a new announcement.",
+    en:
+      toStr(message).trim() ||
+      toStr(title).trim() ||
+      "You have a new announcement.",
   };
 
   const payload = {
@@ -40,12 +48,12 @@ function buildPayload({ appId, title, message, announcementId, targetIntent, cat
       announcementId: toStr(announcementId).trim(),
       targetIntent: intent || "both",
     },
-    // Custom sound names
+    // Custom sound names (must exist in the mobile app build)
     android_sound: "notification_sound",
     ios_sound: "notification_sound.wav",
   };
 
-  // Targeting by OneSignal tag "intent" (set by the Flutter app on login).
+  // Target by OneSignal tag "intent" (set by Flutter app on login).
   if (intent && intent !== "both") {
     payload.filters = [
       { field: "tag", key: "intent", relation: "=", value: intent },
@@ -78,7 +86,9 @@ export default async function handler(req, res) {
   const appId = toStr(process.env.ONESIGNAL_APP_ID).trim();
 
   if (!restApiKey) {
-    res.status(500).json({ ok: false, error: "Missing env ONESIGNAL_REST_API_KEY" });
+    res
+      .status(500)
+      .json({ ok: false, error: "Missing env ONESIGNAL_REST_API_KEY" });
     return;
   }
   if (!appId) {

@@ -3,10 +3,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /* ---------------- HELPER FUNCTIONS ---------------- */
-    // Check if the authenticated user is an admin
+    // Check if the authenticated user is an admin (users or adminUsers collection)
     function isAdmin() {
+      return request.auth != null && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin") ||
+        (exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == "admin")
+      );
+    }
+
+    // Check if the authenticated user is a dashboard admin (adminUsers collection)
+    function isDashboardAdmin() {
       return request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+        exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == "admin";
+    }
+
+    /* ---------------- ADMIN USERS (staff/admin dashboard accounts) ---------------- */
+    match /adminUsers/{userId} {
+      // User can create their own doc during registration
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Authenticated users can read (for login check); dashboard admins read all for staff list
+      allow read: if request.auth != null;
+
+      // Only dashboard admins can update (e.g. approve staff)
+      allow update: if isDashboardAdmin();
+
+      allow delete: if false;
     }
 
     /* ---------------- JOB PROGRAMS ---------------- */
@@ -37,13 +62,56 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    /* ---------------- SCHOLARSHIP PROGRAMS (for mobile app) ---------------- */
-    match /scholarshipPrograms/{document} {
-      // Anyone logged in can read (mobile app + admin list)
+    /* ---------------- SCHOLARSHIP PERIODS (open/close toggles) ---------------- */
+    match /scholarshipPeriods/{document} {
+      // Anyone logged in can read period status
       allow read: if request.auth != null;
 
-      // Only admins can create, update, or delete scholarship programs
+      // Only admins can change open/close state
       allow write: if isAdmin();
+    }
+
+    /* ---------------- SCHOLARSHIP CONFIG (requirements, howToApply) ---------------- */
+    match /scholarshipConfig/{document} {
+      // Anyone logged in can read config (requirements, how-to-apply steps)
+      allow read: if request.auth != null;
+
+      // Only admins can update config
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- SCHOLARSHIP PROGRAMS (OFOP, CITY SCHOLAR, custom - web upload) ---------------- */
+    match /scholarshipPrograms/{document} {
+      // Anyone logged in can read the list of scholarship programs
+      allow read: if request.auth != null;
+
+      // Only admins can add, edit, or delete scholarship programs
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- SCHOLARSHIP RENEWAL PROGRAMS (separate collection for renewal tab) ---------------- */
+    match /scholarshipRenewalPrograms/{document} {
+      // Anyone logged in can read the list of renewal programs
+      allow read: if request.auth != null;
+
+      // Only admins can add, edit, or delete renewal programs
+      allow write: if isAdmin();
+    }
+
+    /* ---------------- USER EMAILS (login lookup: email -> uid, hasMpin) ---------------- */
+    match /userEmails/{emailId} {
+      allow read: if true;
+      allow create, update: if request.auth != null;    
+      allow delete: if false; 
+    }
+
+    /* ---------------- OTP CODES (email / login verification) ---------------- */
+    // These documents store short‑lived OTP codes used during signup/login.
+    // They need to be writeable even when the user is not yet authenticated.
+    match /otpCodes/{docId} {
+      // Allow the app to create, read, and delete OTP docs.
+      // If you want to lock this down further later, we can tighten it.
+      allow read, write: if true;
     }
 
     /* ---------------- USERS ---------------- */
@@ -76,7 +144,37 @@ service cloud.firestore {
       match /ChatBot/{docId} {
         allow read: if request.auth != null &&
           (request.auth.uid == userId || isAdmin());
-        allow write: if request.auth != null &&
+        allow write: if request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: favorites -------- */
+      match /favorites/{docId} {
+        // User can manage their own favorites document
+        allow read, write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: transactions -------- */
+      match /transactions/{docId} {
+        // User can create/read their own transaction records (e.g. job application referrals)
+        allow read, write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+       /* -------- Subcollection: announcementReadStatus -------- */
+      match /announcementReadStatus/{docId} {
+        allow read, write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: notificationReadStatus -------- */
+      match /notificationReadStatus/{docId} {
+        allow read, write: if request.auth != null &&
+          request.auth.uid == userId;
+      }
+
+      /* -------- Subcollection: notificationDeletedStatus -------- */
+      match /notificationDeletedStatus/{docId} {
+        allow read, write: if request.auth != null &&
           request.auth.uid == userId;
       }
     }
@@ -88,6 +186,34 @@ service cloud.firestore {
 
     match /{path=**}/ScholarshipApplied/{docId} {
       allow read: if isAdmin();
+    }
+
+    /* ---------------- FEEDBACKS ---------------- */
+    // App rating feedback saved from the "Rate our app" sheet.
+    match /feedbacks/{docId} {
+      // Any logged-in user can create feedback for themselves only.
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid;
+
+      // Only admins can read or modify feedback documents
+      allow read, update, delete: if isAdmin();
+    }
+		 /* ---------------- NOTIFICATIONS ---------------- */
+    // Per-user notifications for application decisions (accept / decline)
+    match /notifications/{docId} {
+      // Only the owner of the notification (or an admin) can read it
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+
+      // Only admins (your admin dashboard) can create/update/delete notifications
+      allow write: if isAdmin();
+    }
+
+    // Optional per-user subcollection layout: users/{uid}/notifications/{docId}
+    match /users/{userId}/notifications/{docId} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
     }
   }
 }

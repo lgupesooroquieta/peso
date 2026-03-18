@@ -68,6 +68,15 @@ const deleteCancelBtn = document.getElementById("deleteCancelBtn");
 const deleteConfirmBtn = document.getElementById("deleteConfirmBtn");
 const deleteConfirmText = document.getElementById("deleteConfirmText");
 
+// Status confirmation modal
+const statusModal = document.getElementById("statusConfirmModal");
+const statusModalClose = document.getElementById("statusModalClose");
+const statusCancelBtn = document.getElementById("statusCancelBtn");
+const statusConfirmBtn = document.getElementById("statusConfirmBtn");
+const statusConfirmText = document.getElementById("statusConfirmText");
+let statusTargetProgramId = null;
+let statusTargetCurrentStatus = "active";
+
 // Save changes confirmation modal
 const saveChangesModal = document.getElementById("saveChangesModal");
 const saveChangesConfirmBtn = document.querySelector(
@@ -131,6 +140,39 @@ const PAGE_SIZE = 10;
 let currentPage = 1;
 let filteredPrograms = [];
 let deleteTargetId = null;
+
+function openStatusModal(programId, currentStatus) {
+  if (!statusModal || !statusConfirmText) return;
+  statusTargetProgramId = programId;
+  statusTargetCurrentStatus = currentStatus || "active";
+
+  const nextStatus =
+    (statusTargetCurrentStatus || "").toLowerCase() === "active"
+      ? "closed"
+      : "active";
+  const label = nextStatus === "active" ? "Active" : "Closed";
+
+  statusConfirmText.textContent = `Are you sure you want to mark this program as ${label}? You can change it back later.`;
+
+  if (statusConfirmBtn) {
+    const btnText = statusConfirmBtn.querySelector(".btn-text");
+    const icon = statusConfirmBtn.querySelector("i");
+    if (btnText) btnText.textContent = `Mark as ${label}`;
+    if (icon) icon.className = "fas fa-check-circle";
+    statusConfirmBtn.disabled = false;
+  }
+
+  statusModal.classList.add("open");
+  statusModal.setAttribute("aria-hidden", "false");
+}
+
+function closeStatusModal() {
+  if (statusModal) {
+    statusModal.classList.remove("open");
+    statusModal.setAttribute("aria-hidden", "true");
+  }
+  statusTargetProgramId = null;
+}
 
 // Check authentication before loading data
 onAuthStateChanged(auth, (user) => {
@@ -918,23 +960,50 @@ async function toggleProgramStatus(programId, currentStatus) {
 
   const nextStatus =
     (currentStatus || "").toLowerCase() === "active" ? "closed" : "active";
-  const label = nextStatus === "active" ? "Active" : "Closed";
-
-  if (
-    !confirm(
-      `Are you sure you want to mark this program as ${label}? You can change it back later.`,
-    )
-  )
-    return;
-
   try {
+    if (statusConfirmBtn) {
+      statusConfirmBtn.disabled = true;
+      const icon = statusConfirmBtn.querySelector("i");
+      const text = statusConfirmBtn.querySelector(".btn-text");
+      if (icon) icon.className = "fas fa-spinner fa-spin";
+      if (text) text.textContent = "Updating...";
+    }
+
     await updateDoc(doc(db, "jobPrograms", programId), {
       status: nextStatus,
     });
     await fetchPrograms(true);
+    if (typeof closeStatusModal === "function") {
+      closeStatusModal();
+    }
+    if (typeof window.showToast === "function") {
+      const label = nextStatus === "active" ? "Active" : "Closed";
+      window.showToast(`Program marked as ${label}.`, "success");
+    }
   } catch (err) {
     console.error("Error updating program status:", err);
-    alert("Failed to update status. " + (err.message || ""));
+    if (typeof window.showToast === "function") {
+      window.showToast(
+        "Failed to update status. " + (err.message || ""),
+        "error",
+      );
+    } else {
+      alert("Failed to update status. " + (err.message || ""));
+    }
+  } finally {
+    if (statusConfirmBtn) {
+      statusConfirmBtn.disabled = false;
+      const icon = statusConfirmBtn.querySelector("i");
+      const text = statusConfirmBtn.querySelector(".btn-text");
+      if (icon) icon.className = "fas fa-check-circle";
+      if (text) {
+        const next =
+          (statusTargetCurrentStatus || "").toLowerCase() === "active"
+            ? "Closed"
+            : "Active";
+        text.textContent = `Mark as ${next}`;
+      }
+    }
   }
 }
 
@@ -982,7 +1051,9 @@ programsTableBody?.addEventListener("click", (e) => {
   if (statusBtn) {
     const programId = statusBtn.getAttribute("data-program-id");
     const currentStatus = statusBtn.getAttribute("data-status") || "active";
-    if (programId) toggleProgramStatus(programId, currentStatus);
+    if (programId && typeof openStatusModal === "function") {
+      openStatusModal(programId, currentStatus);
+    }
     return;
   }
 
@@ -1063,6 +1134,23 @@ if (deleteCancelBtn)
 if (deleteModal) {
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal) closeDeleteModal();
+  });
+}
+
+if (statusModalClose)
+  statusModalClose.addEventListener("click", closeStatusModal);
+if (statusCancelBtn)
+  statusCancelBtn.addEventListener("click", closeStatusModal);
+if (statusModal) {
+  statusModal.addEventListener("click", (e) => {
+    if (e.target === statusModal) closeStatusModal();
+  });
+}
+
+if (statusConfirmBtn) {
+  statusConfirmBtn.addEventListener("click", () => {
+    if (!statusTargetProgramId) return;
+    toggleProgramStatus(statusTargetProgramId, statusTargetCurrentStatus);
   });
 }
 

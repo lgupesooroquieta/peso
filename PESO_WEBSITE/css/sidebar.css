@@ -5,6 +5,14 @@
   --sidebar-transition: 0.25s ease;
 }
 
+/* Hide Staff Accounts link before JS runs (role cached in localStorage -> data attribute set in <head>) */
+html[data-hide-staff-accounts="1"]
+  .sidebar
+  nav
+  a[href="/pages/staff_accounts/staff_accounts.html"] {
+  display: none !important;
+}
+
 /* Apply collapsed state before first paint (set by inline script in head) to prevent flash on navigation */
 @media (min-width: 992px) {
   html[data-sidebar-collapsed="1"] .sidebar-wrapper {

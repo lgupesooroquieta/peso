@@ -21,7 +21,7 @@ async function sendToBackend(payload) {
       console.warn(
         "[OneSignal] Backend returned",
         res.status,
-        await res.text()
+        await res.text(),
       );
     }
   } catch (err) {
@@ -57,12 +57,7 @@ export async function notifyProgramAdded(options) {
  * }} options
  */
 export async function notifyAnnouncementAdded(options) {
-  const {
-    title = "",
-    id,
-    isNew = true,
-    targetIntent = "both",
-  } = options || {};
+  const { title = "", id, isNew = true, targetIntent = "both" } = options || {};
 
   await sendToBackend({
     event: "announcement_added",
@@ -78,7 +73,14 @@ export async function notifyAnnouncementAdded(options) {
 
 /**
  * Call when an applicant (job or scholarship) is approved.
- * @param {{ applicantName?: string, programName?: string, type?: 'job'|'scholarship', applicantId?: string }} options
+ * @param {{
+ *  applicantName?: string,
+ *  programName?: string,
+ *  type?: 'job'|'scholarship',
+ *  applicantId?: string,
+ *  decision?: 'approved'|'accepted',
+ *  remarks?: string
+ * }} options
  */
 export async function notifyApproval(options) {
   const {
@@ -86,7 +88,14 @@ export async function notifyApproval(options) {
     programName = "",
     type = "job",
     applicantId,
+    decision = "approved",
+    remarks = "",
   } = options || {};
+
+  const d = (decision || "approved").toString().trim().toLowerCase();
+  const verb = d === "accepted" ? "accepted" : "approved";
+  const programPart = programName ? ` for ${programName}` : "";
+  const reasonPart = remarks ? ` Reason: ${remarks}` : "";
 
   await sendToBackend({
     event: "applicant_approved",
@@ -94,16 +103,23 @@ export async function notifyApproval(options) {
     applicantName,
     programName,
     applicantId,
-    title: "Application approved",
-    message: applicantName
-      ? `${applicantName} has been approved.` // Added backticks here
-      : "An application has been approved.",
+    decision: verb,
+    remarks,
+    title: `Application ${verb}`,
+    message: `Your application${programPart} has been ${verb}.${reasonPart}`,
   });
 }
 
 /**
  * Call when an applicant (job or scholarship) is declined.
- * @param {{ applicantName?: string, programName?: string, type?: 'job'|'scholarship', applicantId?: string, remarks?: string }} options
+ * @param {{
+ *  applicantName?: string,
+ *  programName?: string,
+ *  type?: 'job'|'scholarship',
+ *  applicantId?: string,
+ *  remarks?: string,
+ *  decision?: 'declined'|'disapproved'
+ * }} options
  */
 export async function notifyDecline(options) {
   const {
@@ -112,7 +128,13 @@ export async function notifyDecline(options) {
     type = "job",
     applicantId,
     remarks = "",
+    decision = "declined",
   } = options || {};
+
+  const d = (decision || "declined").toString().trim().toLowerCase();
+  const verb = d === "disapproved" ? "disapproved" : "declined";
+  const programPart = programName ? ` for ${programName}` : "";
+  const reasonPart = remarks ? ` Reason: ${remarks}` : "";
 
   await sendToBackend({
     event: "applicant_declined",
@@ -120,11 +142,10 @@ export async function notifyDecline(options) {
     applicantName,
     programName,
     applicantId,
+    decision: verb,
     remarks,
-    title: "Application declined",
-    message: applicantName
-      ? `${applicantName}'s application was declined.` // Added backticks here
-      : "An application was declined.",
+    title: `Application ${verb}`,
+    message: `Your application${programPart} has been ${verb}.${reasonPart}`,
   });
 }
 

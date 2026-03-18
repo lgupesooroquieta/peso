@@ -34,6 +34,27 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          if (
+            localStorage.getItem("peso-admin-role") === "staff" &&
+            localStorage.getItem("peso-admin-approved") === "1"
+          ) {
+            document.documentElement.setAttribute(
+              "data-hide-staff-accounts",
+              "1",
+            );
+            var s = document.createElement("style");
+            s.textContent =
+              '.sidebar nav a[href="/pages/staff_accounts/staff_accounts.html"]{display:none!important;}';
+            document.head.appendChild(s);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
     <title>Announcements | PESO</title>
     <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
     <link
@@ -140,6 +161,12 @@
                   <a href="/pages/job_applicants/job_applicants.html"
                     ><i class="fas fa-briefcase"></i
                     ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/staff_accounts/staff_accounts.html"
+                    ><i class="fas fa-user-shield"></i
+                    ><span class="nav-link-text"> Staff Accounts</span></a
                   >
                 </li>
               </ul>
@@ -493,7 +520,11 @@
                   <div class="form-group">
                     <label for="modalTargetIntent">Target Audience</label>
                     <div class="select-wrapper">
-                      <select id="modalTargetIntent" name="targetIntent" required>
+                      <select
+                        id="modalTargetIntent"
+                        name="targetIntent"
+                        required
+                      >
                         <option value="both">All Applicants</option>
                         <option value="job">Job Seekers</option>
                         <option value="scholarship">Scholars</option>
@@ -509,7 +540,9 @@
               <button
                 type="button"
                 class="btn btn-outline-secondary"
-                onclick="document.getElementById('addAnnouncementModalClose').click()"
+                onclick="
+                  document.getElementById('addAnnouncementModalClose').click()
+                "
               >
                 Cancel
               </button>
@@ -606,6 +639,7 @@
     </div>
 
     <script src="/js/utils/theme.js"></script>
+    <script type="module" src="/js/utils/sidebar-role-visibility.js"></script>
     <script src="/js/utils/sidebar.js"></script>
     <script type="module" src="/js/authentication/logout.js"></script>
     <script src="/js/utils/toast.js"></script>

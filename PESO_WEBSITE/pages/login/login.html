@@ -177,14 +177,249 @@
               <button type="submit" class="btn-login">Sign In</button>
               <p class="signup-prompt">
                 Don't have an account?
-                <a href="/pages/signup/signup.html">Sign up</a>
+                <a href="#" id="openSignupLink">Sign up</a>
               </p>
             </form>
           </div>
         </div>
       </div>
     </div>
+    <!-- Signup Modal -->
+    <div id="signupModal" class="signup-modal" aria-hidden="true">
+      <div class="signup-modal-backdrop"></div>
+      <div
+        class="signup-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="signupModalTitle"
+      >
+        <button
+          type="button"
+          class="signup-modal-close"
+          id="signupModalClose"
+          aria-label="Close signup form"
+        >
+          ×
+        </button>
+        <div class="login-card signup-card">
+          <h2 id="signupModalTitle">Create admin account</h2>
+          <p class="subtitle">For PESO office staff and admins</p>
+          <form id="signupForm">
+            <div class="form-group">
+              <label>FULL NAME</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M4 21v-2a4 4 0 0 1 3-3.87" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="signupName"
+                  placeholder="Juan Dela Cruz"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>EMAIL ADDRESS</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                </span>
+                <input
+                  type="email"
+                  id="signupEmail"
+                  placeholder="you@agency.gov.ph"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>PASSWORD</label>
+              <div class="input-with-icon password-input-wrapper">
+                <span class="input-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
+                <input
+                  type="password"
+                  id="signupPassword"
+                  placeholder="Create a secure password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>ROLE</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"
+                    />
+                    <path d="M6 22v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                  </svg>
+                </span>
+                <select id="signupRole" required>
+                  <option value="">Select role</option>
+                  <option value="admin">Admin</option>
+                  <option value="staff">Staff</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="adminCodeGroup" style="display: none">
+              <label>ADMIN CODE</label>
+              <div class="input-with-icon">
+                <span class="input-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
+                <input
+                  type="password"
+                  id="signupAdminCode"
+                  placeholder="Enter admin secret code"
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="signupSubmitBtn">
+              Create account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification required modal -->
+    <div id="verificationModal" class="signup-modal" aria-hidden="true">
+      <div class="signup-modal-backdrop"></div>
+      <div class="signup-modal-dialog" role="dialog" aria-modal="true">
+        <div class="login-card signup-card">
+          <h2>Verify your account</h2>
+          <p class="subtitle">
+            Please verify your account using the verification link sent to your
+            email.
+          </p>
+          <button type="button" class="btn-login" id="verificationModalClose">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval required modal -->
+    <div id="approvalModal" class="signup-modal" aria-hidden="true">
+      <div class="signup-modal-backdrop"></div>
+      <div class="signup-modal-dialog" role="dialog" aria-modal="true">
+        <div class="login-card signup-card">
+          <h2>Account pending approval</h2>
+          <p class="subtitle">
+            Your account needs to be approved by the administrator.
+          </p>
+          <button type="button" class="btn-login" id="approvalModalClose">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic floating status modal for login (errors, info, approvals, etc.) -->
+    <div id="loginStatusModal" class="signup-modal" aria-hidden="true">
+      <div class="signup-modal-backdrop"></div>
+      <div
+        class="signup-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="loginStatusModalTitle"
+        aria-describedby="loginStatusModalMessage"
+      >
+        <div
+          class="login-card signup-card login-status-modal-card login-status-modal--error"
+        >
+          <h2 id="loginStatusModalTitle">There was a problem</h2>
+          <p class="subtitle" id="loginStatusModalMessage">
+            Invalid email or password.
+          </p>
+          <button
+            type="button"
+            class="btn-login"
+            id="loginStatusModalClose"
+            aria-label="Close message"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/js/authentication/auth-guard.js"></script>
     <script type="module" src="/js/authentication/login.js"></script>
+    <script type="module" src="/js/authentication/register.js"></script>
   </body>
 </html>

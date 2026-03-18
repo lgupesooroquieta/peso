@@ -31,10 +31,7 @@ export function initAuthGuard() {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
       if (isLoginPage()) {
-        if (user) {
-          window.location.replace(DASHBOARD_URL);
-          return;
-        }
+        // Do not auto-redirect; login.js handles redirect after checking adminUsers approval
         resolve(user);
         return;
       }

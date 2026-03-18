@@ -34,6 +34,27 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          if (
+            localStorage.getItem("peso-admin-role") === "staff" &&
+            localStorage.getItem("peso-admin-approved") === "1"
+          ) {
+            document.documentElement.setAttribute(
+              "data-hide-staff-accounts",
+              "1",
+            );
+            var s = document.createElement("style");
+            s.textContent =
+              '.sidebar nav a[href="/pages/staff_accounts/staff_accounts.html"]{display:none!important;}';
+            document.head.appendChild(s);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
     <title>Applicants | PESO</title>
     <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
     <link
@@ -139,6 +160,12 @@
                     class="active"
                     ><i class="fas fa-briefcase"></i
                     ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/staff_accounts/staff_accounts.html"
+                    ><i class="fas fa-user-shield"></i
+                    ><span class="nav-link-text"> Staff Accounts</span></a
                   >
                 </li>
               </ul>
@@ -300,9 +327,23 @@
                     <button
                       type="button"
                       class="applicant-filter-cell"
+                      data-value="Accepted"
+                    >
+                      Accepted
+                    </button>
+                    <button
+                      type="button"
+                      class="applicant-filter-cell"
                       data-value="Declined"
                     >
                       Declined
+                    </button>
+                    <button
+                      type="button"
+                      class="applicant-filter-cell"
+                      data-value="Disapproved"
+                    >
+                      Disapproved
                     </button>
                   </div>
                 </div>
@@ -670,6 +711,14 @@
                   </a>
                   <button
                     type="button"
+                    id="modalViewGradeBtn"
+                    class="btn btn-outline-secondary"
+                    style="display: none"
+                  >
+                    <i class="fas fa-file-alt"></i> View Grade
+                  </button>
+                  <button
+                    type="button"
                     class="btn btn-primary js-edit-applicant-personal"
                     style="display: none"
                   >
@@ -696,7 +745,33 @@
                   </button>
                 </div>
                 <div class="approve-modal-body">
-                  <p>Are you sure you want to approve this applicant?</p>
+                  <label>Reason</label>
+                  <div class="decision-radio-group" role="radiogroup">
+                    <label class="decision-radio-option">
+                      <input
+                        type="radio"
+                        name="approveReason"
+                        value="Visit our office personally"
+                        checked
+                      />
+                      Visit our office personally
+                    </label>
+                    <label class="decision-radio-option">
+                      <input type="radio" name="approveReason" value="Other" />
+                      Other
+                    </label>
+                  </div>
+
+                  <div class="decision-remarks" id="approveRemarksWrap">
+                    <label for="approveRemarks" style="margin-top: 12px"
+                      >Remarks</label
+                    >
+                    <textarea
+                      id="approveRemarks"
+                      placeholder="Enter custom remarks..."
+                      rows="4"
+                    ></textarea>
+                  </div>
                 </div>
                 <div class="approve-modal-footer">
                   <button
@@ -760,14 +835,57 @@
                   </button>
                 </div>
                 <div class="decline-modal-body">
-                  <label for="declineRemarks"
-                    >Remarks (reason for denial)</label
-                  >
-                  <textarea
-                    id="declineRemarks"
-                    placeholder="Enter remarks for why the applicant is denied..."
-                    rows="4"
-                  ></textarea>
+                  <label>Reason</label>
+                  <div class="decision-radio-group" role="radiogroup">
+                    <label class="decision-radio-option">
+                      <input
+                        type="radio"
+                        name="declineReason"
+                        value="Not a resident"
+                        checked
+                      />
+                      Not a resident
+                    </label>
+                    <label class="decision-radio-option">
+                      <input
+                        type="radio"
+                        name="declineReason"
+                        value="Not qualified"
+                      />
+                      Not qualified
+                    </label>
+                    <label class="decision-radio-option">
+                      <input
+                        type="radio"
+                        name="declineReason"
+                        value="Lack of requirements"
+                      />
+                      Lack of requirements
+                    </label>
+                    <label class="decision-radio-option">
+                      <input
+                        type="radio"
+                        name="declineReason"
+                        value="Failure to attend the exam"
+                      />
+                      Failure to attend the exam
+                    </label>
+                    <label class="decision-radio-option">
+                      <input type="radio" name="declineReason" value="Other" />
+                      Other
+                    </label>
+                  </div>
+
+                  <div class="decision-remarks" id="declineRemarksWrap">
+                    <label for="declineRemarks" style="margin-top: 12px"
+                      >Remarks</label
+                    >
+                    <textarea
+                      id="declineRemarks"
+                      placeholder="Enter custom remarks..."
+                      rows="4"
+                    ></textarea>
+                  </div>
                 </div>
                 <div class="decline-modal-footer">
                   <button
@@ -787,6 +905,7 @@
                 <table id="applicantsTable" style="display: none">
                   <thead>
                     <tr>
+                      <th style="text-align: start">Reference</th>
                       <th style="text-align: start">Applicant</th>
                       <th style="text-align: center">Service Applied</th>
                       <th style="text-align: center">Applied Date</th>
@@ -828,6 +947,35 @@
                 </div>
               </div>
             </div>
+
+            <!-- Grade Preview Modal -->
+            <div
+              id="gradePreviewModal"
+              class="grade-preview-overlay"
+              aria-hidden="true"
+            >
+              <div class="grade-preview-box">
+                <div class="grade-preview-header">
+                  <h3>Grade Document</h3>
+                  <button
+                    type="button"
+                    class="grade-preview-close js-close-grade-preview"
+                    aria-label="Close"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="grade-preview-body">
+                  <img id="gradePreviewImage" src="" alt="Grade document" />
+                  <iframe
+                    id="gradePreviewFrame"
+                    src=""
+                    title="Grade document preview"
+                    frameborder="0"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -836,6 +984,7 @@
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
     <script src="/js/utils/theme.js"></script>
+    <script type="module" src="/js/utils/sidebar-role-visibility.js"></script>
     <script src="/js/utils/sidebar.js"></script>
     <script type="module" src="/js/authentication/logout.js"></script>
     <script src="/js/utils/toast.js"></script>

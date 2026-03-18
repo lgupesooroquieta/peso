@@ -34,6 +34,27 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          if (
+            localStorage.getItem("peso-admin-role") === "staff" &&
+            localStorage.getItem("peso-admin-approved") === "1"
+          ) {
+            document.documentElement.setAttribute(
+              "data-hide-staff-accounts",
+              "1",
+            );
+            var s = document.createElement("style");
+            s.textContent =
+              '.sidebar nav a[href="/pages/staff_accounts/staff_accounts.html"]{display:none!important;}';
+            document.head.appendChild(s);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
     <title>User Management</title>
     <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
     <link
@@ -556,6 +577,12 @@
                     ><span class="nav-link-text"> Applicants</span></a
                   >
                 </li>
+                <li class="nav-item">
+                  <a href="/pages/staff_accounts/staff_accounts.html"
+                    ><i class="fas fa-user-shield"></i
+                    ><span class="nav-link-text"> Staff Accounts</span></a
+                  >
+                </li>
               </ul>
             </nav>
             <a href="/pages/login/login.html" class="exit-link text-danger"
@@ -877,6 +904,7 @@
       </div>
     </div>
     <script src="/js/utils/theme.js"></script>
+    <script type="module" src="/js/utils/sidebar-role-visibility.js"></script>
     <script src="/js/utils/sidebar.js"></script>
     <script type="module" src="/js/authentication/logout.js"></script>
     <script src="/js/utils/loading.js"></script>

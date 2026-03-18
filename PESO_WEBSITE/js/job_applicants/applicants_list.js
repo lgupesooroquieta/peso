@@ -54,16 +54,24 @@ const UI = {
     placeholder: document.getElementById("modalApplicantPhotoPlaceholder"),
     editBtn: document.querySelector(".js-edit-applicant-personal"),
     viewNsrp: document.getElementById("modalViewNsrpLink"),
+    viewGradeBtn: document.getElementById("modalViewGradeBtn"),
     editContent: document.getElementById("applicantInfoEditContent"),
     editForm: document.getElementById("applicantEditForm"),
     // Tab Elements
     tabs: document.querySelectorAll(".applicant-tab"),
     tabContents: document.querySelectorAll(".applicant-tab-content"),
   },
+  gradeModal: {
+    self: document.getElementById("gradePreviewModal"),
+    frame: document.getElementById("gradePreviewFrame"),
+    image: document.getElementById("gradePreviewImage"),
+    closeBtn: document.querySelector(".js-close-grade-preview"),
+  },
   approveModal: {
     self: document.getElementById("approveModal"),
     confirmBtn: document.querySelector(".js-confirm-approve"),
     closeBtn: document.querySelector(".js-close-approve-modal"),
+    remarks: document.getElementById("approveRemarks"),
   },
   declineModal: {
     self: document.getElementById("declineModal"),
@@ -79,6 +87,128 @@ const UI = {
 };
 
 let pendingApplicantSubmit = null;
+
+function setDecisionRemarksVisibility(kind) {
+  const name = kind === "approve" ? "approveReason" : "declineReason";
+  const wrapId =
+    kind === "approve" ? "approveRemarksWrap" : "declineRemarksWrap";
+  const remarksId = kind === "approve" ? "approveRemarks" : "declineRemarks";
+
+  const selected = document.querySelector(
+    `input[name="${name}"]:checked`,
+  )?.value;
+  const wrap = document.getElementById(wrapId);
+  if (wrap) wrap.classList.toggle("show", selected === "Other");
+
+  // If not Other, ignore any typed remarks by clearing the field
+  if (selected !== "Other") {
+    const ta = document.getElementById(remarksId);
+    if (ta) ta.value = "";
+  }
+}
+
+function resetDecisionModal(kind) {
+  const name = kind === "approve" ? "approveReason" : "declineReason";
+  const first = document.querySelector(`input[name="${name}"]`);
+  if (first) first.checked = true;
+  setDecisionRemarksVisibility(kind);
+}
+
+function setApproveModalMode(mode) {
+  const modal = UI.approveModal.self;
+  if (!modal) return;
+
+  modal.setAttribute(
+    "data-status",
+    mode === "accept" ? "accepted" : "approved",
+  );
+
+  const titleEl = modal.querySelector(".approve-modal-header h3");
+  const btnTextEl = modal.querySelector("#approveConfirmBtn .btn-text");
+
+  const firstRadio = modal.querySelector('input[name="approveReason"]');
+  if (firstRadio) {
+    const isAccept = mode === "accept";
+    const labelText = isAccept
+      ? "Passed the exam"
+      : "Visit our office personally";
+    firstRadio.value = labelText;
+    const lbl = firstRadio.closest("label");
+    if (lbl) lbl.lastChild.textContent = labelText;
+  }
+
+  if (titleEl)
+    titleEl.textContent =
+      mode === "accept" ? "Accept Applicant" : "Approve Applicant";
+  if (btnTextEl)
+    btnTextEl.textContent = mode === "accept" ? "Accept" : "Approve";
+
+  resetDecisionModal("approve");
+}
+
+function setDeclineModalMode(mode) {
+  const modal = UI.declineModal.self;
+  if (!modal) return;
+
+  modal.setAttribute(
+    "data-status",
+    mode === "disapprove" ? "disapproved" : "declined",
+  );
+
+  const titleEl = modal.querySelector(".decline-modal-header h3");
+  const btnTextEl = modal.querySelector("#declineConfirmBtn .btn-text");
+
+  const options = [...modal.querySelectorAll(".decision-radio-option")];
+  const radios = [...modal.querySelectorAll('input[name="declineReason"]')];
+
+  if (mode === "decline") {
+    // Post-exam: show "Did not pass the exam", "Failure to attend the exam", "Other"
+    if (radios[0]) {
+      radios[0].value = "Did not pass the exam";
+      const lbl0 = radios[0].closest("label");
+      if (lbl0) lbl0.lastChild.textContent = "Did not pass the exam";
+    }
+    if (radios[1]) {
+      radios[1].value = "Failure to attend the exam";
+      const lbl1 = radios[1].closest("label");
+      if (lbl1) lbl1.lastChild.textContent = "Failure to attend the exam";
+    }
+
+    options.forEach((opt, idx) => {
+      const r = opt.querySelector('input[name="declineReason"]');
+      const isOther = r?.value === "Other";
+      const keep = idx <= 1 || isOther;
+      opt.style.display = keep ? "" : "none";
+    });
+  } else {
+    // Pre-exam disapprove: restore original options
+    options.forEach((opt) => (opt.style.display = ""));
+    const mapping = [
+      { value: "Not a resident", text: "Not a resident" },
+      { value: "Not qualified", text: "Not qualified" },
+      { value: "Lack of requirements", text: "Lack of requirements" },
+      {
+        value: "Failure to attend the exam",
+        text: "Failure to attend the exam",
+      },
+      { value: "Other", text: "Other" },
+    ];
+    radios.forEach((r, i) => {
+      if (!mapping[i]) return;
+      r.value = mapping[i].value;
+      const lbl = r.closest("label");
+      if (lbl) lbl.lastChild.textContent = mapping[i].text;
+    });
+  }
+
+  if (titleEl)
+    titleEl.textContent =
+      mode === "disapprove" ? "Disapprove Applicant" : "Decline Applicant";
+  if (btnTextEl)
+    btnTextEl.textContent = mode === "disapprove" ? "Disapprove" : "Decline";
+
+  resetDecisionModal("decline");
+}
 
 // --- INITIALIZATION ---
 async function init() {
@@ -102,7 +232,7 @@ async function init() {
   } catch (err) {
     console.error(err);
     if (UI.tableBody)
-      UI.tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading data.</td></tr>`;
+      UI.tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading data.</td></tr>`;
   } finally {
     if (UI.loading) LoadingOverlay.hide(UI.loading);
     if (document.getElementById("applicantsTable"))
@@ -183,7 +313,8 @@ function applyFilters() {
   STATE.filteredData = STATE.allData.filter((app) => {
     const matchesSearch =
       app.name.toLowerCase().includes(search) ||
-      app.serviceApplied.toLowerCase().includes(search);
+      app.serviceApplied.toLowerCase().includes(search) ||
+      (app.reference && app.reference.toLowerCase().includes(search));
     const matchesType = !type || app.programType === type;
     const matchesStatus = !status || app.status === status;
     let matchesDate = true;
@@ -199,6 +330,44 @@ function applyFilters() {
 }
 
 // --- RENDERING ---
+
+function getFirstGradeUrl(app) {
+  const raw = app.raw || {};
+  let urls =
+    raw.spesGradeUrls ||
+    raw.gradeUrls ||
+    raw.grades ||
+    raw.gradeUrl ||
+    raw.spesGrades;
+
+  if (!urls) return null;
+
+  // Normalize into an array
+  if (typeof urls === "string" || typeof urls === "object") {
+    urls = [urls];
+  }
+  if (!Array.isArray(urls)) return null;
+
+  const normalized = urls
+    .map((u) => {
+      if (!u) return null;
+      if (typeof u === "string") return u;
+      if (typeof u === "object") {
+        // Handle possible Cloudinary or similar object shapes
+        return (
+          u.secure_url ||
+          u.url ||
+          u.href ||
+          (typeof u.toString === "function" ? u.toString() : null)
+        );
+      }
+      return null;
+    })
+    .filter((u) => typeof u === "string" && u.trim().length > 0);
+
+  return normalized.length ? normalized[0] : null;
+}
+
 function renderTable() {
   if (!UI.tableBody) return;
   const { filteredData, currentPage, pageSize } = STATE;
@@ -217,34 +386,88 @@ function renderTable() {
   UI.pagination.next.setAttribute("aria-disabled", currentPage >= totalPages);
 
   if (pageData.length === 0) {
-    UI.tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No applicants found</td></tr>`;
+    UI.tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No applicants found</td></tr>`;
     return;
   }
 
   UI.tableBody.innerHTML = pageData
-    .map(
-      (app) => `
+    .map((app) => {
+      const isSpes = (app.programType || "").toString().trim() === "SPES";
+      const status = app.status;
+
+      let decisionHtml = "";
+
+      if (
+        status === "Accepted" ||
+        status === "Declined" ||
+        status === "Disapproved"
+      ) {
+        decisionHtml = "";
+      } else if (isSpes && status === "Approved") {
+        decisionHtml = `
+            <button class="actions-dropdown-item js-approve" data-action="accept" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-check"></i> Accept</button>
+            <button class="actions-dropdown-item js-decline" data-action="decline" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-times"></i> Decline</button>
+        `;
+      } else if (isSpes && status === "In Progress") {
+        decisionHtml = `
+            <button class="actions-dropdown-item js-approve" data-action="approve" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-check"></i> Approve</button>
+            <button class="actions-dropdown-item js-decline" data-action="disapprove" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-times"></i> Disapprove</button>
+        `;
+      } else {
+        decisionHtml = `
+            <button class="actions-dropdown-item js-approve" data-action="approve" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-check"></i> Approve</button>
+            <button class="actions-dropdown-item js-decline" data-action="decline" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-times"></i> Decline</button>
+        `;
+      }
+
+      return `
     <tr>
-      <td class="text-start"><div class="fw-bold">${app.name}</div></td>
-      <td class="text-center"><span class="badge applicant-service-badge">${app.serviceApplied}</span></td>
+      <td class="text-start">
+        <div class="fw-bold">${app.reference || "—"}</div>
+      </td>
+      <td class="text-start">
+        <div class="fw-bold">${app.name}</div>
+      </td>
+      <td class="text-center">
+        <span class="badge applicant-service-badge">${app.serviceApplied}</span>
+      </td>
       <td class="text-center">${app.dateStr}</td>
-      <td class="text-center"><span class="badge applicant-status-badge ${statusBadgeClass(app.status)}">${app.status}</span></td>
+      <td class="text-center">
+        <span class="badge applicant-status-badge ${statusBadgeClass(
+          app.status,
+        )}">${app.status}</span>
+      </td>
       <td class="text-center">
         <div class="actions-dropdown">
           <button class="btn btn-sm btn-actions-dropdown-toggle js-actions-dropdown-toggle" title="Actions">
             <i class="fas fa-ellipsis-v"></i>
           </button>
           <div class="actions-dropdown-menu">
-            <button class="actions-dropdown-item js-view" data-ref="${encodeURIComponent(app.path)}"><i class="fas fa-eye"></i> View</button>
-            <button class="actions-dropdown-item js-approve" data-ref="${encodeURIComponent(app.path)}"><i class="fas fa-check"></i> Approve</button>
-            <button class="actions-dropdown-item js-decline" data-ref="${encodeURIComponent(app.path)}"><i class="fas fa-times"></i> Decline</button>
-            <button class="actions-dropdown-item actions-dropdown-item-danger js-delete" data-ref="${encodeURIComponent(app.path)}"><i class="fas fa-trash"></i> Delete</button>
+            <button class="actions-dropdown-item js-view" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-eye"></i> View</button>
+            ${decisionHtml}
+            <button class="actions-dropdown-item actions-dropdown-item-danger js-delete" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-trash"></i> Delete</button>
           </div>
         </div>
       </td>
     </tr>
-  `,
-    )
+  `;
+    })
     .join("");
 }
 
@@ -297,6 +520,39 @@ async function handleViewApplicant(path) {
   UI.modal.viewNsrp.href = detailsUrl;
   UI.modal.viewNsrp.style.display = "inline-flex";
   UI.modal.editBtn.style.display = "inline-flex";
+
+  // Setup Grade button (if any grade URL)
+  if (UI.modal.viewGradeBtn) {
+    const gradeUrl = getFirstGradeUrl(app);
+    if (gradeUrl) {
+      UI.modal.viewGradeBtn.style.display = "inline-flex";
+      UI.modal.viewGradeBtn.onclick = () => {
+        if (UI.gradeModal.self) {
+          const isImage =
+            /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(gradeUrl) ||
+            gradeUrl.startsWith("data:image/");
+
+          if (UI.gradeModal.image) {
+            UI.gradeModal.image.style.display = isImage ? "block" : "none";
+            UI.gradeModal.image.src = isImage ? gradeUrl : "";
+          }
+
+          if (UI.gradeModal.frame) {
+            UI.gradeModal.frame.style.display = isImage ? "none" : "block";
+            UI.gradeModal.frame.src = isImage ? "" : gradeUrl;
+          }
+
+          UI.gradeModal.self.classList.add("open");
+        } else {
+          // Fallback: open in new tab if modal not available
+          window.open(gradeUrl, "_blank", "noopener");
+        }
+      };
+    } else {
+      UI.modal.viewGradeBtn.style.display = "none";
+      UI.modal.viewGradeBtn.onclick = null;
+    }
+  }
 }
 
 function resetModalTabs() {
@@ -482,10 +738,14 @@ UI.tableBody.addEventListener("click", async (e) => {
     closeActionsDropdowns();
     UI.approveModal.self.classList.add("open");
     UI.approveModal.self.setAttribute("data-target", path);
+    const action = btn.getAttribute("data-action") || "approve";
+    setApproveModalMode(action === "accept" ? "accept" : "approve");
   } else if (btn.classList.contains("js-decline")) {
     closeActionsDropdowns();
     UI.declineModal.self.classList.add("open");
     UI.declineModal.self.setAttribute("data-target", path);
+    const action = btn.getAttribute("data-action") || "decline";
+    setDeclineModalMode(action === "disapprove" ? "disapprove" : "decline");
   } else if (btn.classList.contains("js-delete")) {
     closeActionsDropdowns();
     if (confirm("Delete permanently?")) {
@@ -602,72 +862,146 @@ UI.pagination.next.addEventListener("click", () => {
   }
 });
 
+document.addEventListener("change", (e) => {
+  const t = e.target;
+  if (!t || t.tagName !== "INPUT") return;
+  if (t.name === "approveReason") setDecisionRemarksVisibility("approve");
+  if (t.name === "declineReason") setDecisionRemarksVisibility("decline");
+});
+
 // Approve Modal Actions
 UI.approveModal.confirmBtn?.addEventListener("click", async () => {
   const path = UI.approveModal.self.getAttribute("data-target");
   const btn = UI.approveModal.confirmBtn;
   if (!path) return;
+  const statusToSet =
+    UI.approveModal.self.getAttribute("data-status") || "approved";
+  const selectedReason =
+    document.querySelector('input[name="approveReason"]:checked')?.value ||
+    null;
+  const rawRemarks = UI.approveModal.remarks?.value || "";
+  const useRemarks = selectedReason === "Other";
+  const remarks = useRemarks ? rawRemarks : "";
+  const reason = useRemarks ? rawRemarks.trim() || "Other" : selectedReason;
+  const item = STATE.allData.find((i) => i.path === path);
+  const userId =
+    item?.raw?.userId ||
+    item?.raw?.uid ||
+    item?.raw?.applicantUserId ||
+    item?.raw?.applicantId ||
+    null;
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector(".btn-text");
   btn.disabled = true;
   if (icon) icon.className = "fas fa-spinner fa-spin";
-  if (text) text.textContent = "Approving...";
+  if (text)
+    text.textContent =
+      statusToSet === "accepted" ? "Accepting..." : "Approving...";
   try {
-    await updateApplicantStatus(path, "approved");
-    const item = STATE.allData.find((i) => i.path === path);
-    if (item) item.status = "Approved";
+    await updateApplicantStatus(path, statusToSet, remarks, userId, reason);
+    if (item) item.status = normalizeStatus(statusToSet);
     applyFilters();
     UI.approveModal.self.classList.remove("open");
-    window.showToast("Approved successfully", "success");
+    if (UI.approveModal.remarks) UI.approveModal.remarks.value = "";
+    resetDecisionModal("approve");
+    window.showToast(
+      statusToSet === "accepted"
+        ? "Accepted successfully"
+        : "Approved successfully",
+      "success",
+    );
     if (item) {
+      const notifyRemarks =
+        (typeof remarks === "string" && remarks.trim()) || reason || "";
       notifyApproval({
         applicantName: item.name,
         programName: item.programType,
         type: "job",
+        applicantId: userId,
+        decision: statusToSet,
+        remarks: notifyRemarks,
       }).catch(() => {});
     }
   } finally {
     btn.disabled = false;
     if (icon) icon.className = "fas fa-check-circle";
-    if (text) text.textContent = "Approve";
+    if (text)
+      text.textContent =
+        (UI.approveModal.self.getAttribute("data-status") || "approved") ===
+        "accepted"
+          ? "Accept"
+          : "Approve";
   }
 });
 
-UI.approveModal.closeBtn?.addEventListener("click", () =>
-  UI.approveModal.self.classList.remove("open"),
-);
+UI.approveModal.closeBtn?.addEventListener("click", () => {
+  UI.approveModal.self.classList.remove("open");
+  if (UI.approveModal.remarks) UI.approveModal.remarks.value = "";
+  setApproveModalMode("approve");
+});
 
 // Decline Modal Actions
 UI.declineModal.confirmBtn?.addEventListener("click", async () => {
   const path = UI.declineModal.self.getAttribute("data-target");
-  const remarks = UI.declineModal.remarks?.value || "";
+  const rawRemarks = UI.declineModal.remarks?.value || "";
   const btn = UI.declineModal.confirmBtn;
   if (!path) return;
+  const statusToSet =
+    UI.declineModal.self.getAttribute("data-status") || "declined";
+  const selectedReason =
+    document.querySelector('input[name="declineReason"]:checked')?.value ||
+    null;
+  const useRemarks = selectedReason === "Other";
+  const remarks = useRemarks ? rawRemarks : "";
+  const reason = useRemarks ? rawRemarks.trim() || "Other" : selectedReason;
+  const item = STATE.allData.find((i) => i.path === path);
+  const userId =
+    item?.raw?.userId ||
+    item?.raw?.uid ||
+    item?.raw?.applicantUserId ||
+    item?.raw?.applicantId ||
+    null;
   const icon = btn?.querySelector("i");
   const text = btn?.querySelector(".btn-text");
   btn.disabled = true;
   if (icon) icon.className = "fas fa-spinner fa-spin";
-  if (text) text.textContent = "Declining...";
+  if (text)
+    text.textContent =
+      statusToSet === "disapproved" ? "Disapproving..." : "Declining...";
   try {
-    await updateApplicantStatus(path, "declined", remarks);
-    const item = STATE.allData.find((i) => i.path === path);
-    if (item) item.status = "Declined";
+    await updateApplicantStatus(path, statusToSet, remarks, userId, reason);
+    if (item) item.status = normalizeStatus(statusToSet);
     applyFilters();
     UI.declineModal.self.classList.remove("open");
     if (UI.declineModal.remarks) UI.declineModal.remarks.value = "";
-    window.showToast("Declined successfully", "success");
+    resetDecisionModal("decline");
+    window.showToast(
+      statusToSet === "disapproved"
+        ? "Disapproved successfully"
+        : "Declined successfully",
+      "success",
+    );
     if (item) {
+      const notifyRemarks =
+        (typeof remarks === "string" && remarks.trim()) || reason || "";
       notifyDecline({
         applicantName: item.name,
         programName: item.programType,
         type: "job",
-        remarks,
+        remarks: notifyRemarks,
+        applicantId: userId,
+        decision: statusToSet,
       }).catch(() => {});
     }
   } finally {
     btn.disabled = false;
     if (icon) icon.className = "fas fa-times-circle";
-    if (text) text.textContent = "Decline";
+    if (text)
+      text.textContent =
+        (UI.declineModal.self.getAttribute("data-status") || "declined") ===
+        "disapproved"
+          ? "Disapprove"
+          : "Decline";
   }
 });
 
@@ -682,11 +1016,26 @@ document.addEventListener("click", (e) => {
       .forEach((m) => m.classList.remove("open"));
   }
   if (e.target === UI.modal.self) UI.modal.self.classList.remove("open");
-  if (e.target === UI.approveModal.self)
+  if (e.target === UI.approveModal.self) {
     UI.approveModal.self.classList.remove("open");
+    if (UI.approveModal.remarks) UI.approveModal.remarks.value = "";
+    setApproveModalMode("approve");
+  }
   if (e.target === UI.declineModal.self) {
     UI.declineModal.self.classList.remove("open");
     if (UI.declineModal.remarks) UI.declineModal.remarks.value = "";
+    setDeclineModalMode("decline");
+  }
+  if (e.target === UI.gradeModal.self) {
+    UI.gradeModal.self.classList.remove("open");
+    if (UI.gradeModal.frame) {
+      UI.gradeModal.frame.src = "";
+      UI.gradeModal.frame.style.display = "block";
+    }
+    if (UI.gradeModal.image) {
+      UI.gradeModal.image.src = "";
+      UI.gradeModal.image.style.display = "none";
+    }
   }
 });
 
@@ -696,20 +1045,33 @@ document
     el.addEventListener("click", () => UI.modal.self.classList.remove("open")),
   );
 
-document
-  .querySelectorAll(".js-close-approve-modal")
-  .forEach((el) =>
-    el.addEventListener("click", () =>
-      UI.approveModal.self.classList.remove("open"),
-    ),
-  );
+document.querySelectorAll(".js-close-approve-modal").forEach((el) =>
+  el.addEventListener("click", () => {
+    UI.approveModal.self.classList.remove("open");
+    if (UI.approveModal.remarks) UI.approveModal.remarks.value = "";
+    setApproveModalMode("approve");
+  }),
+);
 
 document.querySelectorAll(".js-close-decline-modal").forEach((el) =>
   el.addEventListener("click", () => {
     UI.declineModal.self.classList.remove("open");
     if (UI.declineModal.remarks) UI.declineModal.remarks.value = "";
+    setDeclineModalMode("decline");
   }),
 );
+
+UI.gradeModal.closeBtn?.addEventListener("click", () => {
+  UI.gradeModal.self.classList.remove("open");
+  if (UI.gradeModal.frame) {
+    UI.gradeModal.frame.src = "";
+    UI.gradeModal.frame.style.display = "block";
+  }
+  if (UI.gradeModal.image) {
+    UI.gradeModal.image.src = "";
+    UI.gradeModal.image.style.display = "none";
+  }
+});
 
 // Edit Mode Interactions
 UI.modal.editBtn?.addEventListener("click", () => {

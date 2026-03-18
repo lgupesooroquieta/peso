@@ -1,484 +1,929 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NSRP Jobseeker Registration Form</title>
-  <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
-  <link rel="stylesheet" href="/css/job_applicants/applicant_details.css" />
-</head>
-<body>
-  <script type="module" src="/js/authentication/auth-guard.js"></script>
-  <script>document.documentElement.classList.add("auth-pending");</script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NSRP Jobseeker Registration Form</title>
+    <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
+    <link rel="stylesheet" href="/css/job_applicants/applicant_details.css" />
+  </head>
+  <body>
+    <script type="module" src="/js/authentication/auth-guard.js"></script>
+    <script>
+      document.documentElement.classList.add("auth-pending");
+    </script>
 
-  <div class="no-print">
-    <button onclick="window.print()">⬇ Download / Print Form</button>
-  </div>
+    <div class="no-print">
+      <button onclick="downloadNsrpPdf()">⬇ Download PDF</button>
+      <button onclick="window.print()">🖨 Print Form</button>
+    </div>
 
-  <div class="preview-paper">
-
-    <!-- ═══════════ PAGE 1 ═══════════ -->
-    <div class="page" id="page1">
-
-      <div class="form-header">
-        <div class="nsrp-label">NSRP Form 1<br>September<br>2020</div>
-        <div class="title-block">
-          <div>Republic of the Philippines</div>
-          <div>Department of Labor and Employment</div>
-          <div class="main-title">National Skills Registration Program</div>
-          <div class="form-title">Jobseeker Registration Form</div>
+    <div class="preview-paper">
+      <!-- ═══════════ PAGE 1 ═══════════ -->
+      <div class="page" id="page1">
+        <div class="form-header">
+          <div class="title-block">
+            <div>Republic of the Philippines</div>
+            <div>Department of Labor and Employment</div>
+            <div class="main-title">National Skills Registration Program</div>
+            <div class="form-title">Jobseeker Registration Form</div>
+          </div>
         </div>
-      </div>
 
-      <div id="sectionServiceType" style="font-size:9px;padding:2px 5px;border:1px solid #000;border-top:none;background:#fff">
-        <strong>Type of Service:</strong>
-        <span class="data-val" id="viewServiceApplied"></span>
-      </div>
+        <div
+          id="sectionServiceType"
+          style="
+            font-size: 9px;
+            padding: 2px 5px;
+            border: 1px solid #000;
+            border-top: none;
+            background: #fff;
+          "
+        >
+          <strong>Type of Service:</strong>
+          <span class="data-val" id="viewServiceApplied"></span>
+        </div>
 
-      <div class="instructions">
-        <strong>INSTRUCTIONS:</strong> Please fill out the form legibly in block letters using a ballpoint pen.
-        Check appropriate boxes. Please do not leave any items unanswered. Indicate "NA" if not applicable.
-        You may use extra sheet if needed. Submit accomplished form to the Public Employment Service Office
-        (PESO) Manager or Officer in your city/municipality.
-      </div>
+        <div class="instructions">
+          <strong>INSTRUCTIONS:</strong> Please fill out the form legibly in
+          block letters using a ballpoint pen. Check appropriate boxes. Please
+          do not leave any items unanswered. Indicate "NA" if not applicable.
+          You may use extra sheet if needed. Submit accomplished form to the
+          Public Employment Service Office (PESO) Manager or Officer in your
+          city/municipality.
+        </div>
 
-      <!-- I. PERSONAL INFORMATION -->
-      <div class="sec-hdr sec-hdr-top">I. PERSONAL INFORMATION</div>
+        <!-- I. PERSONAL INFORMATION -->
+        <div class="sec-hdr sec-hdr-top">I. PERSONAL INFORMATION</div>
 
-      <div class="name-row">
-        <div class="nc"><span class="field-lbl">SURNAME</span><span class="data-val" id="viewSurname"></span></div>
-        <div class="nc"><span class="field-lbl">FIRST NAME</span><span class="data-val" id="viewFirstName"></span></div>
-        <div class="nc"><span class="field-lbl">MIDDLE NAME</span><span class="data-val" id="viewMiddleName"></span></div>
-        <div class="nc suffix"><span class="field-lbl">SUFFIX (Ex: Sr., Jr., III, etc.)</span><span class="data-val" id="viewSuffix"></span></div>
-      </div>
-
-      <div class="personal-block">
-        <div class="personal-left">
-          <div class="cell">
-            <span class="field-lbl">DATE OF BIRTH (mm/dd/yyyy)</span>
-            <span class="data-val" id="viewDob"></span>
+        <div class="name-row">
+          <div class="nc">
+            <span class="field-lbl">SURNAME</span
+            ><span class="data-val" id="viewSurname"></span>
           </div>
-          <div class="cell" style="display:flex;align-items:center;gap:8px">
-            <span class="field-lbl" style="margin:0">SEX</span>
-            <label><input type="checkbox" id="checkMale"   disabled /> Male</label>
-            <label><input type="checkbox" id="checkFemale" disabled /> Female</label>
+          <div class="nc">
+            <span class="field-lbl">FIRST NAME</span
+            ><span class="data-val" id="viewFirstName"></span>
           </div>
-          <div class="cell">
-            <span class="field-lbl">RELIGION</span>
-            <span class="data-val" id="viewReligion"></span>
+          <div class="nc">
+            <span class="field-lbl">MIDDLE NAME</span
+            ><span class="data-val" id="viewMiddleName"></span>
           </div>
-          <div class="cell" style="border-bottom:none">
-            <span class="field-lbl">CIVIL STATUS</span>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;margin-top:2px;font-size:9px">
-              <label><input type="checkbox" id="checkSingle"    disabled /> Single</label>
-              <label><input type="checkbox" id="checkMarried"   disabled /> Married</label>
-              <label><input type="checkbox" id="checkWidowed"   disabled /> Widowed</label>
-              <label><input type="checkbox" id="checkSeparated" disabled /> Separated</label>
+          <div class="nc suffix">
+            <span class="field-lbl">SUFFIX (Ex: Sr., Jr., III, etc.)</span
+            ><span class="data-val" id="viewSuffix"></span>
+          </div>
+        </div>
+
+        <div class="personal-block">
+          <div class="personal-left">
+            <div class="cell">
+              <span class="field-lbl">DATE OF BIRTH (mm/dd/yyyy)</span>
+              <span class="data-val" id="viewDob"></span>
+            </div>
+            <div
+              class="cell"
+              style="display: flex; align-items: center; gap: 8px"
+            >
+              <span class="field-lbl" style="margin: 0">SEX</span>
+              <label
+                ><input type="checkbox" id="checkMale" disabled /> Male</label
+              >
+              <label
+                ><input type="checkbox" id="checkFemale" disabled />
+                Female</label
+              >
+            </div>
+            <div class="cell">
+              <span class="field-lbl">RELIGION</span>
+              <span class="data-val" id="viewReligion"></span>
+            </div>
+            <div class="cell" style="border-bottom: none">
+              <span class="field-lbl">CIVIL STATUS</span>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 2px 6px;
+                  margin-top: 2px;
+                  font-size: 9px;
+                "
+              >
+                <label
+                  ><input type="checkbox" id="checkSingle" disabled />
+                  Single</label
+                >
+                <label
+                  ><input type="checkbox" id="checkMarried" disabled />
+                  Married</label
+                >
+                <label
+                  ><input type="checkbox" id="checkWidowed" disabled />
+                  Widowed</label
+                >
+                <label
+                  ><input type="checkbox" id="checkSeparated" disabled />
+                  Separated</label
+                >
+              </div>
+            </div>
+          </div>
+          <div class="personal-right">
+            <div class="addr-hdr">PRESENT ADDRESS</div>
+            <div class="addr-row">
+              <span class="addr-lbl">House No./ Street Village</span
+              ><span class="data-val" id="viewHouse"></span>
+            </div>
+            <div class="addr-row">
+              <span class="addr-lbl">Barangay</span
+              ><span class="data-val" id="viewBarangay"></span>
+            </div>
+            <div class="addr-row">
+              <span class="addr-lbl">Municipality/City</span
+              ><span class="data-val" id="viewCity"></span>
+            </div>
+            <div class="addr-row" style="border-bottom: none; flex: 1">
+              <span class="addr-lbl">Province</span
+              ><span class="data-val" id="viewProvince"></span>
             </div>
           </div>
         </div>
-        <div class="personal-right">
-          <div class="addr-hdr">PRESENT ADDRESS</div>
-          <div class="addr-row"><span class="addr-lbl">House No./ Street Village</span><span class="data-val" id="viewHouse"></span></div>
-          <div class="addr-row"><span class="addr-lbl">Barangay</span><span class="data-val" id="viewBarangay"></span></div>
-          <div class="addr-row"><span class="addr-lbl">Municipality/City</span><span class="data-val" id="viewCity"></span></div>
-          <div class="addr-row" style="border-bottom:none;flex:1"><span class="addr-lbl">Province</span><span class="data-val" id="viewProvince"></span></div>
-        </div>
-      </div>
 
-      <div class="tin-dis-row">
-        <div class="tin-dis-left">
-          <div class="tin-cell">
-            <span class="field-lbl">TIN</span>
-            <span class="data-val" id="viewTin"></span>
+        <!-- TIN / Disability / Height / Contact / Email
+           JS adds .left-empty to #tinDisRow when TIN & Disability are both absent,
+           which collapses the left column and makes Height/Contact/Email a full-width row. -->
+        <div class="tin-dis-row" id="tinDisRow">
+          <div class="tin-dis-left" id="tinDisLeft">
+            <div class="tin-cell" id="tinCell">
+              <span class="field-lbl">TIN</span>
+              <span class="data-val" id="viewTin"></span>
+            </div>
+            <div class="dis-cell" id="sectionDisability">
+              <span class="field-lbl">DISABILITY</span>
+              <div class="dis-grid">
+                <label
+                  ><input type="checkbox" id="checkDisVisual" disabled />
+                  Visual</label
+                >
+                <label
+                  ><input type="checkbox" id="checkDisSpeech" disabled />
+                  Speech</label
+                >
+                <label
+                  ><input type="checkbox" id="checkDisMental" disabled />
+                  Mental</label
+                >
+                <label
+                  ><input type="checkbox" id="checkDisHearing" disabled />
+                  Hearing</label
+                >
+                <label
+                  ><input type="checkbox" id="checkDisPhysical" disabled />
+                  Physical</label
+                >
+                <label style="grid-column: 1/-1">
+                  <input type="checkbox" id="checkDisOther" disabled /> Others:
+                  <span class="data-val" id="viewDisOther"></span>
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="dis-cell" id="sectionDisability">
-            <span class="field-lbl">DISABILITY</span>
-            <div class="dis-grid">
-              <label><input type="checkbox" id="checkDisVisual"   disabled /> Visual</label>
-              <label><input type="checkbox" id="checkDisSpeech"   disabled /> Speech</label>
-              <label><input type="checkbox" id="checkDisMental"   disabled /> Mental</label>
-              <label><input type="checkbox" id="checkDisHearing"  disabled /> Hearing</label>
-              <label><input type="checkbox" id="checkDisPhysical" disabled /> Physical</label>
-              <label style="grid-column:1/-1">
-                <input type="checkbox" id="checkDisOther" disabled /> Others:
-                <span class="data-val" id="viewDisOther"></span>
+
+          <div class="tin-dis-right" id="tinDisRight">
+            <div class="hce" id="hceHeight">
+              <span class="field-lbl">HEIGHT (FT.)</span
+              ><span class="data-val" id="viewHeight"></span>
+            </div>
+            <div class="hce" id="hceContact">
+              <span class="field-lbl">CONTACT NUMBER/S</span
+              ><span class="data-val" id="viewContact"></span>
+            </div>
+            <div class="hce" id="hceEmail" style="border-bottom: none; flex: 1">
+              <span class="field-lbl">E-MAIL</span>
+              <span
+                class="data-val"
+                id="viewEmail"
+                style="font-size: 8.5px; word-break: break-all"
+              ></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPLOYMENT STATUS -->
+        <div class="sec-hdr">EMPLOYMENT STATUS / TYPE</div>
+        <div class="emp-row">
+          <div class="emp-col" id="colEmployed">
+            <label class="bold" style="font-size: 10px"
+              ><input type="checkbox" id="checkEmployed" disabled />
+              Employed</label
+            >
+            <div class="emp-types">
+              <label
+                ><input type="checkbox" id="checkEmpWage" disabled /> Wage
+                employed</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpSelf" disabled />
+                Self-employed (Please specify)</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpFish" disabled />
+                Fisherman/Fisherfolk</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpVendor" disabled />
+                Vendor/Retailer</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpHome" disabled /> Home-based
+                worker</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpTransport" disabled />
+                Transport</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpDomestic" disabled />
+                Domestic Worker</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpFreelance" disabled />
+                Freelancer</label
+              >
+              <label
+                ><input type="checkbox" id="checkEmpArtisan" disabled />
+                Artisan/Craft Worker</label
+              >
+              <label style="grid-column: 1/-1">
+                <input type="checkbox" id="checkEmpOther" disabled /> Others
+                (Please specify):
+                <span class="data-val" id="viewEmpOther"></span>
               </label>
             </div>
           </div>
-        </div>
-        <div class="tin-dis-right">
-          <div class="hce"><span class="field-lbl">HEIGHT (FT.)</span><span class="data-val" id="viewHeight"></span></div>
-          <div class="hce"><span class="field-lbl">CONTACT NUMBER/S</span><span class="data-val" id="viewContact"></span></div>
-          <div class="hce" style="border-bottom:none;flex:1">
-            <span class="field-lbl">E-MAIL</span>
-            <span class="data-val" id="viewEmail" style="font-size:8.5px;word-break:break-all"></span>
-          </div>
-        </div>
-      </div>
 
-      <!-- EMPLOYMENT STATUS -->
-      <div class="sec-hdr">EMPLOYMENT STATUS / TYPE</div>
-      <div class="emp-row">
-
-        <div class="emp-col" id="colEmployed">
-          <label class="bold" style="font-size:10px"><input type="checkbox" id="checkEmployed" disabled /> Employed</label>
-          <div class="emp-types">
-            <label><input type="checkbox" id="checkEmpWage"      disabled /> Wage employed</label>
-            <label><input type="checkbox" id="checkEmpSelf"      disabled /> Self-employed (Please specify)</label>
-            <label><input type="checkbox" id="checkEmpFish"      disabled /> Fisherman/Fisherfolk</label>
-            <label><input type="checkbox" id="checkEmpVendor"    disabled /> Vendor/Retailer</label>
-            <label><input type="checkbox" id="checkEmpHome"      disabled /> Home-based worker</label>
-            <label><input type="checkbox" id="checkEmpTransport" disabled /> Transport</label>
-            <label><input type="checkbox" id="checkEmpDomestic"  disabled /> Domestic Worker</label>
-            <label><input type="checkbox" id="checkEmpFreelance" disabled /> Freelancer</label>
-            <label><input type="checkbox" id="checkEmpArtisan"   disabled /> Artisan/Craft Worker</label>
-            <label style="grid-column:1/-1">
-              <input type="checkbox" id="checkEmpOther" disabled /> Others (Please specify):
-              <span class="data-val" id="viewEmpOther"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="emp-col" id="colUnemployed">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:3px">
-            <label class="bold" style="font-size:10px"><input type="checkbox" id="checkUnemployed" disabled /> Unemployed</label>
-            <span style="font-size:8.5px">How long have you been looking for work? (months) <span class="data-val" id="viewMonthsLooking"></span></span>
-          </div>
-          <div class="unemp-types">
-            <label><input type="checkbox" id="checkUnempNew"        disabled /> New Entrant/Fresh Graduate</label>
-            <label><input type="checkbox" id="checkUnempTermLocal"  disabled /> Terminated/Laid off (local)</label>
-            <label><input type="checkbox" id="checkUnempContract"   disabled /> Finished Contract</label>
-            <div id="wrapperUnempAbroad" style="display:flex;flex-direction:column;gap:1px">
-              <label><input type="checkbox" id="checkUnempTermAbroad" disabled /> Terminated/Laid off (abroad)</label>
-              <span id="wrapperUnempCountry" style="padding-left:16px;font-size:8.5px">specify country: <span class="data-val" id="viewUnempCountry"></span></span>
+          <div class="emp-col" id="colUnemployed">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 3px;
+              "
+            >
+              <label class="bold" style="font-size: 10px"
+                ><input type="checkbox" id="checkUnemployed" disabled />
+                Unemployed</label
+              >
+              <span style="font-size: 8.5px"
+                >How long have you been looking for work? (months)
+                <span class="data-val" id="viewMonthsLooking"></span
+              ></span>
             </div>
-            <label><input type="checkbox" id="checkUnempResigned"  disabled /> Resigned</label>
-            <div id="wrapperUnempOther" style="display:flex;flex-direction:column;gap:1px">
-              <label><input type="checkbox" id="checkUnempOther"   disabled /> Others, please specify:</label>
-              <span class="data-val" id="viewUnempOther" style="padding-left:16px"></span>
+            <div class="unemp-types">
+              <label
+                ><input type="checkbox" id="checkUnempNew" disabled /> New
+                Entrant/Fresh Graduate</label
+              >
+              <label
+                ><input type="checkbox" id="checkUnempTermLocal" disabled />
+                Terminated/Laid off (local)</label
+              >
+              <label
+                ><input type="checkbox" id="checkUnempContract" disabled />
+                Finished Contract</label
+              >
+              <div
+                id="wrapperUnempAbroad"
+                style="display: flex; flex-direction: column; gap: 1px"
+              >
+                <label
+                  ><input type="checkbox" id="checkUnempTermAbroad" disabled />
+                  Terminated/Laid off (abroad)</label
+                >
+                <span
+                  id="wrapperUnempCountry"
+                  style="padding-left: 16px; font-size: 8.5px"
+                  >specify country:
+                  <span class="data-val" id="viewUnempCountry"></span
+                ></span>
+              </div>
+              <label
+                ><input type="checkbox" id="checkUnempResigned" disabled />
+                Resigned</label
+              >
+              <div
+                id="wrapperUnempOther"
+                style="display: flex; flex-direction: column; gap: 1px"
+              >
+                <label
+                  ><input type="checkbox" id="checkUnempOther" disabled />
+                  Others, please specify:</label
+                >
+                <span
+                  class="data-val"
+                  id="viewUnempOther"
+                  style="padding-left: 16px"
+                ></span>
+              </div>
+              <label
+                ><input type="checkbox" id="checkUnempRetired" disabled />
+                Retired</label
+              >
+              <label class="unemp-span-2"
+                ><input type="checkbox" id="checkUnempCalamity" disabled />
+                Terminated/Laid off due to calamity</label
+              >
             </div>
-            <label><input type="checkbox" id="checkUnempRetired"   disabled /> Retired</label>
-            <label class="unemp-span-2"><input type="checkbox" id="checkUnempCalamity" disabled /> Terminated/Laid off due to calamity</label>
           </div>
         </div>
 
-      </div>
-
-      <!-- OFW -->
-      <div class="info-row" id="sectionOfw">
-        <span>Are you an OFW? <label><input type="checkbox" id="checkOfwYes" disabled /> Yes</label> <label><input type="checkbox" id="checkOfwNo" disabled /> No</label></span>
-        <span>Are you a former OFW? <label><input type="checkbox" id="checkFormerOfwYes" disabled /> Yes</label> <label><input type="checkbox" id="checkFormerOfwNo" disabled /> No</label></span>
-        <span>Specify country <span class="data-val" id="viewOfwCountry"></span></span>
-        <span>Latest country of deployment <span class="data-val" id="viewLatestCountry"></span></span>
-        <span style="width:100%">Month and year of return to Philippines <span class="data-val" id="viewOfwReturn"></span></span>
-      </div>
-
-      <!-- 4Ps -->
-      <div class="info-row" id="section4ps">
-        <span>Are you a 4Ps beneficiary? <label><input type="checkbox" id="check4psYes" disabled /> Yes</label> <label><input type="checkbox" id="check4psNo" disabled /> No</label></span>
-        <span>If yes, please provide Household ID No. <span class="data-val" id="view4psId"></span></span>
-      </div>
-
-      <!-- II. JOB PREFERENCE -->
-      <div class="sec-hdr">II. JOB PREFERENCE</div>
-      <table class="tbl">
-        <tr>
-          <th style="width:40%">PREFERRED OCCUPATION</th>
-          <th>PREFERRED WORK LOCATION</th>
-        </tr>
-        <tr>
-          <td>
-            <label><input type="checkbox" id="checkJobPartTime" disabled /> Part-time</label> &nbsp;
-            <label><input type="checkbox" id="checkJobFullTime" disabled /> Full-time</label>
-          </td>
-          <td>
-            <label><input type="checkbox" id="checkLocLocal"   disabled /> Local (specify cities/municipalities):</label><br>
-            <label><input type="checkbox" id="checkLocOverseas"disabled /> Overseas, (specify countries):</label>
-          </td>
-        </tr>
-        <tr id="rowPref1"><td>1. <span class="data-val" id="viewPrefOcc1"></span></td><td>1. <span class="data-val" id="viewPrefLoc1"></span></td></tr>
-        <tr id="rowPref2"><td>2. <span class="data-val" id="viewPrefOcc2"></span></td><td>2. <span class="data-val" id="viewPrefLoc2"></span></td></tr>
-        <tr id="rowPref3"><td>3. <span class="data-val" id="viewPrefOcc3"></span></td><td>3. <span class="data-val" id="viewPrefLoc3"></span></td></tr>
-      </table>
-
-      <!-- III. LANGUAGE PROFICIENCY -->
-      <div class="sec-hdr">III. LANGUAGE / DIALECT PROFICIENCY (check if applicable)</div>
-      <table class="tbl">
-        <tr>
-          <th style="width:22%">LANGUAGE/DIALECT</th>
-          <th>READ</th><th>WRITE</th><th>SPEAK</th><th>UNDERSTAND</th>
-        </tr>
-        <tr id="rowLangEng">
-          <td class="bold">English</td>
-          <td class="center"><input type="checkbox" id="checkLangEngRead"       disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangEngWrite"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangEngSpeak"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangEngUnderstand" disabled /></td>
-        </tr>
-        <tr id="rowLangFil">
-          <td class="bold">Filipino</td>
-          <td class="center"><input type="checkbox" id="checkLangFilRead"       disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangFilWrite"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangFilSpeak"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangFilUnderstand" disabled /></td>
-        </tr>
-        <tr id="rowLangMan">
-          <td class="bold">Mandarin</td>
-          <td class="center"><input type="checkbox" id="checkLangManRead"       disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangManWrite"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangManSpeak"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangManUnderstand" disabled /></td>
-        </tr>
-        <tr id="rowLangOther">
-          <td class="bold">Others: <span class="data-val" id="viewLangOther"></span></td>
-          <td class="center"><input type="checkbox" id="checkLangOtherRead"       disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangOtherWrite"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangOtherSpeak"      disabled /></td>
-          <td class="center"><input type="checkbox" id="checkLangOtherUnderstand" disabled /></td>
-        </tr>
-      </table>
-
-    </div><!-- end #page1 -->
-
-    <!-- ═══════════ PAGE 2 ═══════════ -->
-    <div class="page" id="page2">
-
-      <!-- IV. EDUCATIONAL BACKGROUND -->
-      <div class="sec-hdr sec-hdr-top" id="sectionEducationHeader">IV. EDUCATIONAL BACKGROUND</div>
-      <div id="sectionEducation">
-        <div id="rowCurrentlyInSchool" style="border:1px solid #000;border-top:none;padding:2px 5px;font-size:9px">
-          Currently in school?
-          <label style="margin-left:8px"><input type="checkbox" id="checkSchoolYes" disabled /> Yes</label>
-          <label style="margin-left:8px"><input type="checkbox" id="checkSchoolNo"  disabled /> No</label>
+        <!-- OFW -->
+        <div class="info-row" id="sectionOfw">
+          <span
+            >Are you an OFW?
+            <label
+              ><input type="checkbox" id="checkOfwYes" disabled /> Yes</label
+            >
+            <label
+              ><input type="checkbox" id="checkOfwNo" disabled /> No</label
+            ></span
+          >
+          <span
+            >Are you a former OFW?
+            <label
+              ><input type="checkbox" id="checkFormerOfwYes" disabled />
+              Yes</label
+            >
+            <label
+              ><input type="checkbox" id="checkFormerOfwNo" disabled />
+              No</label
+            ></span
+          >
+          <span
+            >Specify country <span class="data-val" id="viewOfwCountry"></span
+          ></span>
+          <span
+            >Latest country of deployment
+            <span class="data-val" id="viewLatestCountry"></span
+          ></span>
+          <span style="width: 100%"
+            >Month and year of return to Philippines
+            <span class="data-val" id="viewOfwReturn"></span
+          ></span>
         </div>
+
+        <!-- 4Ps -->
+        <div class="info-row" id="section4ps">
+          <span
+            >Are you a 4Ps beneficiary?
+            <label
+              ><input type="checkbox" id="check4psYes" disabled /> Yes</label
+            >
+            <label
+              ><input type="checkbox" id="check4psNo" disabled /> No</label
+            ></span
+          >
+          <span
+            >If yes, please provide Household ID No.
+            <span class="data-val" id="view4psId"></span
+          ></span>
+        </div>
+
+        <!-- II. JOB PREFERENCE -->
+        <div class="sec-hdr">II. JOB PREFERENCE</div>
         <table class="tbl">
           <tr>
-            <th rowspan="2" style="width:18%">LEVEL</th>
-            <th rowspan="2" style="width:32%">COURSE</th>
-            <th rowspan="2" style="width:14%">YEAR GRADUATED</th>
-            <th colspan="2">IF UNDERGRADUATE</th>
+            <th style="width: 40%">PREFERRED OCCUPATION</th>
+            <th>PREFERRED WORK LOCATION</th>
           </tr>
-          <tr><th style="width:20%">LEVEL REACHED</th><th style="width:16%">YEAR LAST ATTENDED</th></tr>
-          <tr id="rowElem">
-            <td class="bold">Elementary</td>
-            <td><span class="data-val" id="viewElemCourse"></span></td>
-            <td><span class="data-val" id="viewElemYear"></span></td>
-            <td><span class="data-val" id="viewElemLevel"></span></td>
-            <td><span class="data-val" id="viewElemLastYear"></span></td>
-          </tr>
-          <tr id="rowSec">
-            <td style="vertical-align:top;padding:2px 4px;font-size:9px">
-              <div><label><input type="checkbox" id="checkSecNonK12" disabled /> Secondary (Non-K12)</label></div>
-              <div style="margin-top:3px"><label><input type="checkbox" id="checkSecK12" disabled /> Secondary (K-12)</label></div>
-              <div style="font-size:8px;margin-top:2px">Senior High Strand: <span class="data-val" id="viewSeniorHighStrand"></span></div>
+          <tr>
+            <td>
+              <label
+                ><input type="checkbox" id="checkJobPartTime" disabled />
+                Part-time</label
+              >
+              &nbsp;
+              <label
+                ><input type="checkbox" id="checkJobFullTime" disabled />
+                Full-time</label
+              >
             </td>
-            <td></td>
-            <td><span class="data-val" id="viewSecYear"></span></td>
-            <td><span class="data-val" id="viewSecLevel"></span></td>
-            <td><span class="data-val" id="viewSecLastYear"></span></td>
+            <td>
+              <label
+                ><input type="checkbox" id="checkLocLocal" disabled /> Local
+                (specify cities/municipalities):</label
+              ><br />
+              <label
+                ><input type="checkbox" id="checkLocOverseas" disabled />
+                Overseas, (specify countries):</label
+              >
+            </td>
           </tr>
-          <tr id="rowTert">
-            <td class="bold">Tertiary</td>
-            <td><span class="data-val" id="viewTertCourse"></span></td>
-            <td><span class="data-val" id="viewTertYear"></span></td>
-            <td><span class="data-val" id="viewTertLevel"></span></td>
-            <td><span class="data-val" id="viewTertLastYear"></span></td>
+          <tr id="rowPref1">
+            <td>1. <span class="data-val" id="viewPrefOcc1"></span></td>
+            <td>1. <span class="data-val" id="viewPrefLoc1"></span></td>
           </tr>
-          <tr id="rowGrad">
-            <td class="bold">Graduate Studies/<br>Post-graduate</td>
-            <td><span class="data-val" id="viewGradCourse"></span></td>
-            <td><span class="data-val" id="viewGradYear"></span></td>
-            <td><span class="data-val" id="viewGradLevel"></span></td>
-            <td><span class="data-val" id="viewGradLastYear"></span></td>
+          <tr id="rowPref2">
+            <td>2. <span class="data-val" id="viewPrefOcc2"></span></td>
+            <td>2. <span class="data-val" id="viewPrefLoc2"></span></td>
+          </tr>
+          <tr id="rowPref3">
+            <td>3. <span class="data-val" id="viewPrefOcc3"></span></td>
+            <td>3. <span class="data-val" id="viewPrefLoc3"></span></td>
           </tr>
         </table>
-      </div>
 
-      <!-- V. TECHNICAL/VOCATIONAL -->
-      <div class="sec-hdr" id="sectionTrainingHeader">V. TECHNICAL/VOCATIONAL AND OTHER TRAINING (Include courses taken as part of college education)</div>
-      <div id="sectionTraining">
+        <!-- III. LANGUAGE PROFICIENCY -->
+        <div class="sec-hdr">
+          III. LANGUAGE / DIALECT PROFICIENCY (check if applicable)
+        </div>
         <table class="tbl">
           <tr>
-            <th style="width:30%">TRAINING/VOCATIONAL COURSE</th>
-            <th style="width:12%">HOURS OF TRAINING</th>
-            <th style="width:20%">TRAINING INSTITUTION</th>
-            <th style="width:20%">SKILLS ACQUIRED</th>
-            <th style="width:18%">CERTIFICATES RECEIVED<br><span style="font-size:7.5px;font-weight:normal">(NC I, NC II, NC III, NC IV, etc.)</span></th>
+            <th style="width: 22%">LANGUAGE/DIALECT</th>
+            <th>READ</th>
+            <th>WRITE</th>
+            <th>SPEAK</th>
+            <th>UNDERSTAND</th>
           </tr>
-          <tr id="rowTrain1">
-            <td>1. <span class="data-val" id="viewTrainCourse1"></span></td>
-            <td><span class="data-val" id="viewTrainHours1"></span></td>
-            <td><span class="data-val" id="viewTrainInst1"></span></td>
-            <td><span class="data-val" id="viewTrainSkill1"></span></td>
-            <td><span class="data-val" id="viewTrainCert1"></span></td>
+          <tr id="rowLangEng">
+            <td class="bold">English</td>
+            <td class="center">
+              <input type="checkbox" id="checkLangEngRead" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangEngWrite" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangEngSpeak" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangEngUnderstand" disabled />
+            </td>
           </tr>
-          <tr id="rowTrain2">
-            <td>2. <span class="data-val" id="viewTrainCourse2"></span></td>
-            <td><span class="data-val" id="viewTrainHours2"></span></td>
-            <td><span class="data-val" id="viewTrainInst2"></span></td>
-            <td><span class="data-val" id="viewTrainSkill2"></span></td>
-            <td><span class="data-val" id="viewTrainCert2"></span></td>
+          <tr id="rowLangFil">
+            <td class="bold">Filipino</td>
+            <td class="center">
+              <input type="checkbox" id="checkLangFilRead" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangFilWrite" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangFilSpeak" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangFilUnderstand" disabled />
+            </td>
           </tr>
-          <tr id="rowTrain3">
-            <td>3. <span class="data-val" id="viewTrainCourse3"></span></td>
-            <td><span class="data-val" id="viewTrainHours3"></span></td>
-            <td><span class="data-val" id="viewTrainInst3"></span></td>
-            <td><span class="data-val" id="viewTrainSkill3"></span></td>
-            <td><span class="data-val" id="viewTrainCert3"></span></td>
+          <tr id="rowLangMan">
+            <td class="bold">Mandarin</td>
+            <td class="center">
+              <input type="checkbox" id="checkLangManRead" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangManWrite" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangManSpeak" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangManUnderstand" disabled />
+            </td>
           </tr>
-        </table>
-      </div>
-
-      <!-- VI. ELIGIBILITY -->
-      <div class="sec-hdr" id="sectionEligibilityHeader">VI. ELIGIBILITY / PROFESSIONAL LICENSE</div>
-      <div id="sectionEligibility">
-        <table class="tbl">
-          <tr>
-            <th style="width:22%">ELIGIBILITY<br>(Civil Service)</th>
-            <th style="width:12%">DATE TAKEN</th>
-            <th style="width:46%">PROFESSIONAL LICENSE (PRC)</th>
-            <th style="width:20%">VALID UNTIL</th>
-          </tr>
-          <tr id="rowElig1">
-            <td>1. <span class="data-val" id="viewElig1"></span></td>
-            <td><span class="data-val" id="viewEligDate1"></span></td>
-            <td>1. <span class="data-val" id="viewPrc1"></span></td>
-            <td><span class="data-val" id="viewPrcValid1"></span></td>
-          </tr>
-          <tr id="rowElig2">
-            <td>2. <span class="data-val" id="viewElig2"></span></td>
-            <td><span class="data-val" id="viewEligDate2"></span></td>
-            <td>2. <span class="data-val" id="viewPrc2"></span></td>
-            <td><span class="data-val" id="viewPrcValid2"></span></td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- VII. WORK EXPERIENCE -->
-      <div class="sec-hdr" id="sectionWorkHeader">VII. WORK EXPERIENCE (Limit to 10 year period, start with the most recent employment)</div>
-      <div id="sectionWork">
-        <table class="tbl">
-          <tr>
-            <th style="width:26%">COMPANY NAME</th>
-            <th style="width:22%">ADDRESS<br><span style="font-size:7.5px;font-weight:normal">(City/Municipality)</span></th>
-            <th style="width:22%">POSITION</th>
-            <th style="width:12%">NUMBER OF MONTHS</th>
-            <th style="width:18%">STATUS<br><span style="font-size:7.5px;font-weight:normal">(Permanent, Contractual, Part-time, Probationary)</span></th>
-          </tr>
-          <tr id="rowWork1" style="height:22px">
-            <td><span class="data-val" id="viewWorkComp1"></span></td>
-            <td><span class="data-val" id="viewWorkAddr1"></span></td>
-            <td><span class="data-val" id="viewWorkPos1"></span></td>
-            <td><span class="data-val" id="viewWorkMonths1"></span></td>
-            <td><span class="data-val" id="viewWorkStat1"></span></td>
-          </tr>
-          <tr id="rowWork2" style="height:22px">
-            <td><span class="data-val" id="viewWorkComp2"></span></td>
-            <td><span class="data-val" id="viewWorkAddr2"></span></td>
-            <td><span class="data-val" id="viewWorkPos2"></span></td>
-            <td><span class="data-val" id="viewWorkMonths2"></span></td>
-            <td><span class="data-val" id="viewWorkStat2"></span></td>
-          </tr>
-          <tr id="rowWork3" style="height:22px">
-            <td><span class="data-val" id="viewWorkComp3"></span></td>
-            <td><span class="data-val" id="viewWorkAddr3"></span></td>
-            <td><span class="data-val" id="viewWorkPos3"></span></td>
-            <td><span class="data-val" id="viewWorkMonths3"></span></td>
-            <td><span class="data-val" id="viewWorkStat3"></span></td>
-          </tr>
-          <tr id="rowWork4" style="height:22px">
-            <td><span class="data-val" id="viewWorkComp4"></span></td>
-            <td><span class="data-val" id="viewWorkAddr4"></span></td>
-            <td><span class="data-val" id="viewWorkPos4"></span></td>
-            <td><span class="data-val" id="viewWorkMonths4"></span></td>
-            <td><span class="data-val" id="viewWorkStat4"></span></td>
+          <tr id="rowLangOther">
+            <td class="bold">
+              Others: <span class="data-val" id="viewLangOther"></span>
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangOtherRead" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangOtherWrite" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangOtherSpeak" disabled />
+            </td>
+            <td class="center">
+              <input type="checkbox" id="checkLangOtherUnderstand" disabled />
+            </td>
           </tr>
         </table>
       </div>
+      <!-- end #page1 -->
 
-      <!-- VIII. OTHER SKILLS -->
-      <div class="sec-hdr" id="sectionOtherSkillsHeader">VIII. OTHER SKILLS ACQUIRED WITHOUT CERTIFICATE</div>
-      <div class="skills-grid" id="sectionOtherSkills">
-        <label><input type="checkbox" id="checkSkillAuto"        disabled /> AUTO MECHANIC</label>
-        <label><input type="checkbox" id="checkSkillElectrician" disabled /> ELECTRICIAN</label>
-        <label><input type="checkbox" id="checkSkillPhotography" disabled /> PHOTOGRAPHY</label>
-        <label><input type="checkbox" id="checkSkillBeautician"  disabled /> BEAUTICIAN</label>
-        <label><input type="checkbox" id="checkSkillEmbroidery"  disabled /> EMBROIDERY</label>
-        <label><input type="checkbox" id="checkSkillPlumbing"    disabled /> PLUMBING</label>
-        <label><input type="checkbox" id="checkSkillCarpentry"   disabled /> CARPENTRY WORK</label>
-        <label><input type="checkbox" id="checkSkillGardening"   disabled /> GARDENING</label>
-        <label><input type="checkbox" id="checkSkillSewing"      disabled /> SEWING DRESSES</label>
-        <label><input type="checkbox" id="checkSkillComputer"    disabled /> COMPUTER LITERATE</label>
-        <label><input type="checkbox" id="checkSkillMasonry"     disabled /> MASONRY</label>
-        <label><input type="checkbox" id="checkSkillStenography" disabled /> STENOGRAPHY</label>
-        <label><input type="checkbox" id="checkSkillDomestic"    disabled /> DOMESTIC CHORES</label>
-        <label><input type="checkbox" id="checkSkillPainter"     disabled /> PAINTER/ARTIST</label>
-        <label><input type="checkbox" id="checkSkillTailoring"   disabled /> TAILORING</label>
-        <label><input type="checkbox" id="checkSkillDriver"      disabled /> DRIVER</label>
-        <label><input type="checkbox" id="checkSkillPaintingJobs"disabled /> PAINTING JOBS</label>
-        <label><input type="checkbox" id="checkSkillOther" disabled /> OTHERS: <span class="data-val" id="viewSkillOther"></span></label>
-      </div>
-
-      <!-- CERTIFICATION -->
-      <div class="cert-box">
-        <div class="center bold" style="margin-bottom:4px">CERTIFICATION/AUTHORIZATION</div>
-        <p style="margin:0">
-          This is to certify that all data/information that I have provided in this form are true to the best of my knowledge.
-          This is also to authorize DOLE to include my profile in the PESO Employment Information System and use my personal
-          information for employment facilitation. I am also aware that DOLE is not obliged to seek employment on my behalf.
-        </p>
-        <div class="sig-row">
-          <div class="sig-block" style="width:45%">
-            <div class="sig-line" id="viewSigApp"></div>
-            <div class="bold" style="font-size:9px">Signature of Applicant</div>
+      <!-- ═══════════ PAGE 2 ═══════════ -->
+      <div class="page" id="page2">
+        <!-- IV. EDUCATIONAL BACKGROUND -->
+        <div class="sec-hdr sec-hdr-top" id="sectionEducationHeader">
+          IV. EDUCATIONAL BACKGROUND
+        </div>
+        <div id="sectionEducation">
+          <div
+            id="rowCurrentlyInSchool"
+            style="
+              border: 1px solid #000;
+              border-top: none;
+              padding: 2px 5px;
+              font-size: 9px;
+            "
+          >
+            Currently in school?
+            <label style="margin-left: 8px"
+              ><input type="checkbox" id="checkSchoolYes" disabled /> Yes</label
+            >
+            <label style="margin-left: 8px"
+              ><input type="checkbox" id="checkSchoolNo" disabled /> No</label
+            >
           </div>
-          <div class="sig-block" style="width:25%">
-            <div class="sig-line"><span class="data-val" id="viewSigDate"></span></div>
-            <div class="bold" style="font-size:9px">Date</div>
+          <table class="tbl">
+            <tr>
+              <th rowspan="2" style="width: 18%">LEVEL</th>
+              <th rowspan="2" style="width: 32%">COURSE</th>
+              <th rowspan="2" style="width: 14%">YEAR GRADUATED</th>
+              <th colspan="2">IF UNDERGRADUATE</th>
+            </tr>
+            <tr>
+              <th style="width: 20%">LEVEL REACHED</th>
+              <th style="width: 16%">YEAR LAST ATTENDED</th>
+            </tr>
+            <tr id="rowElem">
+              <td class="bold">Elementary</td>
+              <td><span class="data-val" id="viewElemCourse"></span></td>
+              <td><span class="data-val" id="viewElemYear"></span></td>
+              <td><span class="data-val" id="viewElemLevel"></span></td>
+              <td><span class="data-val" id="viewElemLastYear"></span></td>
+            </tr>
+            <tr id="rowSec">
+              <td style="vertical-align: top; padding: 2px 4px; font-size: 9px">
+                <div>
+                  <label
+                    ><input type="checkbox" id="checkSecNonK12" disabled />
+                    Secondary (Non-K12)</label
+                  >
+                </div>
+                <div style="margin-top: 3px">
+                  <label
+                    ><input type="checkbox" id="checkSecK12" disabled />
+                    Secondary (K-12)</label
+                  >
+                </div>
+                <div style="font-size: 8px; margin-top: 2px">
+                  Senior High Strand:
+                  <span class="data-val" id="viewSeniorHighStrand"></span>
+                </div>
+              </td>
+              <td></td>
+              <td><span class="data-val" id="viewSecYear"></span></td>
+              <td><span class="data-val" id="viewSecLevel"></span></td>
+              <td><span class="data-val" id="viewSecLastYear"></span></td>
+            </tr>
+            <tr id="rowTert">
+              <td class="bold">Tertiary</td>
+              <td><span class="data-val" id="viewTertCourse"></span></td>
+              <td><span class="data-val" id="viewTertYear"></span></td>
+              <td><span class="data-val" id="viewTertLevel"></span></td>
+              <td><span class="data-val" id="viewTertLastYear"></span></td>
+            </tr>
+            <tr id="rowGrad">
+              <td class="bold">Graduate Studies/<br />Post-graduate</td>
+              <td><span class="data-val" id="viewGradCourse"></span></td>
+              <td><span class="data-val" id="viewGradYear"></span></td>
+              <td><span class="data-val" id="viewGradLevel"></span></td>
+              <td><span class="data-val" id="viewGradLastYear"></span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- V. TECHNICAL/VOCATIONAL -->
+        <div class="sec-hdr" id="sectionTrainingHeader">
+          V. TECHNICAL/VOCATIONAL AND OTHER TRAINING (Include courses taken as
+          part of college education)
+        </div>
+        <div id="sectionTraining">
+          <table class="tbl">
+            <tr>
+              <th style="width: 30%">TRAINING/VOCATIONAL COURSE</th>
+              <th style="width: 12%">HOURS OF TRAINING</th>
+              <th style="width: 20%">TRAINING INSTITUTION</th>
+              <th style="width: 20%">SKILLS ACQUIRED</th>
+              <th style="width: 18%">
+                CERTIFICATES RECEIVED<br /><span
+                  style="font-size: 7.5px; font-weight: normal"
+                  >(NC I, NC II, NC III, NC IV, etc.)</span
+                >
+              </th>
+            </tr>
+            <tr id="rowTrain1">
+              <td>1. <span class="data-val" id="viewTrainCourse1"></span></td>
+              <td><span class="data-val" id="viewTrainHours1"></span></td>
+              <td><span class="data-val" id="viewTrainInst1"></span></td>
+              <td><span class="data-val" id="viewTrainSkill1"></span></td>
+              <td><span class="data-val" id="viewTrainCert1"></span></td>
+            </tr>
+            <tr id="rowTrain2">
+              <td>2. <span class="data-val" id="viewTrainCourse2"></span></td>
+              <td><span class="data-val" id="viewTrainHours2"></span></td>
+              <td><span class="data-val" id="viewTrainInst2"></span></td>
+              <td><span class="data-val" id="viewTrainSkill2"></span></td>
+              <td><span class="data-val" id="viewTrainCert2"></span></td>
+            </tr>
+            <tr id="rowTrain3">
+              <td>3. <span class="data-val" id="viewTrainCourse3"></span></td>
+              <td><span class="data-val" id="viewTrainHours3"></span></td>
+              <td><span class="data-val" id="viewTrainInst3"></span></td>
+              <td><span class="data-val" id="viewTrainSkill3"></span></td>
+              <td><span class="data-val" id="viewTrainCert3"></span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- VI. ELIGIBILITY -->
+        <div class="sec-hdr" id="sectionEligibilityHeader">
+          VI. ELIGIBILITY / PROFESSIONAL LICENSE
+        </div>
+        <div id="sectionEligibility">
+          <table class="tbl">
+            <tr>
+              <th style="width: 22%">ELIGIBILITY<br />(Civil Service)</th>
+              <th style="width: 12%">DATE TAKEN</th>
+              <th style="width: 46%">PROFESSIONAL LICENSE (PRC)</th>
+              <th style="width: 20%">VALID UNTIL</th>
+            </tr>
+            <tr id="rowElig1">
+              <td>1. <span class="data-val" id="viewElig1"></span></td>
+              <td><span class="data-val" id="viewEligDate1"></span></td>
+              <td>1. <span class="data-val" id="viewPrc1"></span></td>
+              <td><span class="data-val" id="viewPrcValid1"></span></td>
+            </tr>
+            <tr id="rowElig2">
+              <td>2. <span class="data-val" id="viewElig2"></span></td>
+              <td><span class="data-val" id="viewEligDate2"></span></td>
+              <td>2. <span class="data-val" id="viewPrc2"></span></td>
+              <td><span class="data-val" id="viewPrcValid2"></span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- VII. WORK EXPERIENCE -->
+        <div class="sec-hdr" id="sectionWorkHeader">
+          VII. WORK EXPERIENCE (Limit to 10 year period, start with the most
+          recent employment)
+        </div>
+        <div id="sectionWork">
+          <table class="tbl">
+            <tr>
+              <th style="width: 26%">COMPANY NAME</th>
+              <th style="width: 22%">
+                ADDRESS<br /><span style="font-size: 7.5px; font-weight: normal"
+                  >(City/Municipality)</span
+                >
+              </th>
+              <th style="width: 22%">POSITION</th>
+              <th style="width: 12%">NUMBER OF MONTHS</th>
+              <th style="width: 18%">
+                STATUS<br /><span style="font-size: 7.5px; font-weight: normal"
+                  >(Permanent, Contractual, Part-time, Probationary)</span
+                >
+              </th>
+            </tr>
+            <tr id="rowWork1" style="height: 22px">
+              <td><span class="data-val" id="viewWorkComp1"></span></td>
+              <td><span class="data-val" id="viewWorkAddr1"></span></td>
+              <td><span class="data-val" id="viewWorkPos1"></span></td>
+              <td><span class="data-val" id="viewWorkMonths1"></span></td>
+              <td><span class="data-val" id="viewWorkStat1"></span></td>
+            </tr>
+            <tr id="rowWork2" style="height: 22px">
+              <td><span class="data-val" id="viewWorkComp2"></span></td>
+              <td><span class="data-val" id="viewWorkAddr2"></span></td>
+              <td><span class="data-val" id="viewWorkPos2"></span></td>
+              <td><span class="data-val" id="viewWorkMonths2"></span></td>
+              <td><span class="data-val" id="viewWorkStat2"></span></td>
+            </tr>
+            <tr id="rowWork3" style="height: 22px">
+              <td><span class="data-val" id="viewWorkComp3"></span></td>
+              <td><span class="data-val" id="viewWorkAddr3"></span></td>
+              <td><span class="data-val" id="viewWorkPos3"></span></td>
+              <td><span class="data-val" id="viewWorkMonths3"></span></td>
+              <td><span class="data-val" id="viewWorkStat3"></span></td>
+            </tr>
+            <tr id="rowWork4" style="height: 22px">
+              <td><span class="data-val" id="viewWorkComp4"></span></td>
+              <td><span class="data-val" id="viewWorkAddr4"></span></td>
+              <td><span class="data-val" id="viewWorkPos4"></span></td>
+              <td><span class="data-val" id="viewWorkMonths4"></span></td>
+              <td><span class="data-val" id="viewWorkStat4"></span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- VIII. OTHER SKILLS -->
+        <div class="sec-hdr" id="sectionOtherSkillsHeader">
+          VIII. OTHER SKILLS ACQUIRED WITHOUT CERTIFICATE
+        </div>
+        <div class="skills-grid" id="sectionOtherSkills">
+          <label
+            ><input type="checkbox" id="checkSkillAuto" disabled /> AUTO
+            MECHANIC</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillElectrician" disabled />
+            ELECTRICIAN</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillPhotography" disabled />
+            PHOTOGRAPHY</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillBeautician" disabled />
+            BEAUTICIAN</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillEmbroidery" disabled />
+            EMBROIDERY</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillPlumbing" disabled />
+            PLUMBING</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillCarpentry" disabled />
+            CARPENTRY WORK</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillGardening" disabled />
+            GARDENING</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillSewing" disabled /> SEWING
+            DRESSES</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillComputer" disabled /> COMPUTER
+            LITERATE</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillMasonry" disabled />
+            MASONRY</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillStenography" disabled />
+            STENOGRAPHY</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillDomestic" disabled /> DOMESTIC
+            CHORES</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillPainter" disabled />
+            PAINTER/ARTIST</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillTailoring" disabled />
+            TAILORING</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillDriver" disabled />
+            DRIVER</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillPaintingJobs" disabled />
+            PAINTING JOBS</label
+          >
+          <label
+            ><input type="checkbox" id="checkSkillOther" disabled /> OTHERS:
+            <span class="data-val" id="viewSkillOther"></span
+          ></label>
+        </div>
+
+        <!-- CERTIFICATION -->
+        <div class="cert-box">
+          <div class="center bold" style="margin-bottom: 4px">
+            CERTIFICATION/AUTHORIZATION
+          </div>
+          <p style="margin: 0">
+            This is to certify that all data/information that I have provided in
+            this form are true to the best of my knowledge. This is also to
+            authorize DOLE to include my profile in the PESO Employment
+            Information System and use my personal information for employment
+            facilitation. I am also aware that DOLE is not obliged to seek
+            employment on my behalf.
+          </p>
+          <div class="sig-row">
+            <div class="sig-block" style="width: 45%">
+              <div class="sig-line" id="viewSigApp"></div>
+              <div class="bold" style="font-size: 9px">
+                Signature of Applicant
+              </div>
+            </div>
+            <div class="sig-block" style="width: 25%">
+              <div class="sig-line">
+                <span class="data-val" id="viewSigDate"></span>
+              </div>
+              <div class="bold" style="font-size: 9px">Date</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOR PESO USE ONLY -->
+        <div class="peso-box">
+          <div class="peso-dotted">
+            FOR USE OF PESO ONLY. PLEASE DO NOT WRITE BELOW THIS DOTTED LINE.
+          </div>
+          <div class="peso-inner">
+            <div class="peso-left">
+              <div class="bold" style="font-size: 9px">Referred to:</div>
+              <div class="peso-ref-grid">
+                <label
+                  ><input type="checkbox" id="checkPesoSpes" disabled />
+                  SPES</label
+                >
+                <label
+                  ><input type="checkbox" id="checkPesoDileep" disabled />
+                  DILEEP</label
+                >
+                <label
+                  ><input type="checkbox" id="checkPesoGip" disabled />
+                  GIP</label
+                >
+                <label
+                  ><input type="checkbox" id="checkPesoTesda" disabled /> TESDA
+                  Training</label
+                >
+                <label
+                  ><input type="checkbox" id="checkPesoTupad" disabled />
+                  TUPAD</label
+                >
+                <label
+                  ><input type="checkbox" id="checkPesoJobStart" disabled />
+                  JobStart</label
+                >
+              </div>
+              <div style="margin-top: 4px; font-size: 9px">
+                <label
+                  ><input type="checkbox" id="checkPesoOther" disabled />
+                  Others, specify:
+                  <span
+                    class="data-val"
+                    id="viewPesoOther"
+                    style="
+                      border-bottom: 1px solid #000;
+                      min-width: 70px;
+                      display: inline-block;
+                    "
+                  ></span>
+                </label>
+              </div>
+            </div>
+            <div class="peso-right">
+              <div class="bold" style="font-size: 9px">Assessed by:</div>
+              <div class="assessor-row">
+                <div class="assessor-block" style="width: 60%">
+                  <div class="assessor-line">
+                    <span class="data-val" id="viewAssessor"></span>
+                  </div>
+                  <div style="font-size: 8px">
+                    Signature over Printed Name of Assessor
+                  </div>
+                </div>
+                <div class="assessor-block" style="width: 30%">
+                  <div class="assessor-line">
+                    <span class="data-val" id="viewAssessDate"></span>
+                  </div>
+                  <div class="bold" style="font-size: 8.5px">Date</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <!-- end #page2 -->
+    </div>
+    <!-- end .preview-paper -->
 
-      <!-- FOR PESO USE ONLY -->
-      <div class="peso-box">
-        <div class="peso-dotted">FOR USE OF PESO ONLY. PLEASE DO NOT WRITE BELOW THIS DOTTED LINE.</div>
-        <div class="peso-inner">
-          <div class="peso-left">
-            <div class="bold" style="font-size:9px">Referred to:</div>
-            <div class="peso-ref-grid">
-              <label><input type="checkbox" id="checkPesoSpes"    disabled /> SPES</label>
-              <label><input type="checkbox" id="checkPesoDileep"  disabled /> DILEEP</label>
-              <label><input type="checkbox" id="checkPesoGip"     disabled /> GIP</label>
-              <label><input type="checkbox" id="checkPesoTesda"   disabled /> TESDA Training</label>
-              <label><input type="checkbox" id="checkPesoTupad"   disabled /> TUPAD</label>
-              <label><input type="checkbox" id="checkPesoJobStart"disabled /> JobStart</label>
-            </div>
-            <div style="margin-top:4px;font-size:9px">
-              <label><input type="checkbox" id="checkPesoOther" disabled /> Others, specify:
-                <span class="data-val" id="viewPesoOther" style="border-bottom:1px solid #000;min-width:70px;display:inline-block"></span>
-              </label>
-            </div>
-          </div>
-          <div class="peso-right">
-            <div class="bold" style="font-size:9px">Assessed by:</div>
-            <div class="assessor-row">
-              <div class="assessor-block" style="width:60%">
-                <div class="assessor-line"><span class="data-val" id="viewAssessor"></span></div>
-                <div style="font-size:8px">Signature over Printed Name of Assessor</div>
-              </div>
-              <div class="assessor-block" style="width:30%">
-                <div class="assessor-line"><span class="data-val" id="viewAssessDate"></span></div>
-                <div class="bold" style="font-size:8.5px">Date</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end #page2 -->
-  </div><!-- end .preview-paper -->
-
-  <script type="module" src="/js/job_applicants/applicant_details.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script>
+      function downloadNsrpPdf() {
+        const el = document.querySelector(".preview-paper");
+        if (!el || typeof html2pdf === "undefined") {
+          window.print();
+          return;
+        }
+        const opt = {
+          margin: 0,
+          filename: "nsrp_form.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+        html2pdf().set(opt).from(el).save();
+      }
+    </script>
+    <script
+      type="module"
+      src="/js/job_applicants/applicant_details.js"
+    ></script>
+  </body>
 </html>

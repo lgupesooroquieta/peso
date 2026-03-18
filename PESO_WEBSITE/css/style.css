@@ -415,6 +415,165 @@ body {
   text-decoration: underline;
 }
 
+/* Signup modal */
+.signup-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.signup-modal.open {
+  display: flex;
+}
+
+.signup-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  transition: none;
+}
+
+/* Login status modal: keep background fully stable (no dimming illusion) */
+#loginStatusModal .signup-modal-backdrop {
+  background: transparent;
+}
+
+#loginStatusModal .login-status-modal-card {
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.25),
+    0 8px 20px rgba(15, 23, 42, 0.15);
+}
+
+.signup-modal-dialog {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  width: 100%;
+  margin: 16px;
+}
+
+.signup-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.45),
+    0 8px 20px rgba(15, 23, 42, 0.3);
+}
+
+.signup-modal-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.4);
+}
+
+.signup-modal-close:hover {
+  background: #1e293b;
+}
+
+.signup-modal .form-group:last-of-type {
+  margin-bottom: 20px;
+}
+
+.signup-modal select {
+  width: 100%;
+  padding: 14px 14px 14px 46px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #0d1b2a;
+  background: #f1f5f9;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+  appearance: none;
+}
+
+.signup-modal select:focus {
+  border-color: #1a56db;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+}
+
+/* Floating login status modal variants (error/info/warning) */
+.login-status-modal-card {
+  position: relative;
+  padding-top: 30px;
+  padding-bottom: 26px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: none;
+}
+
+.login-status-modal-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.login-status-modal-card .subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  color: #64748b;
+}
+
+.login-status-modal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border-top: 0;
+}
+
+.login-status-modal--error::before {
+  /* no colored outline */
+}
+
+.login-status-modal--error h2 {
+  color: #b91c1c;
+}
+
+.login-status-modal--warning::before {
+  /* no colored outline */
+}
+
+.login-status-modal--warning h2 {
+  color: #92400e;
+}
+
+.login-status-modal--info::before {
+  border-top-color: #1d4ed8;
+}
+
+.login-status-modal--info h2 {
+  color: #1d4ed8;
+}
+
+/* Slightly smaller primary button inside status modal */
+.login-status-modal-card .btn-login {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 0.95rem;
+}
+
 /* ---- Responsive: show only white login panel (hide left panel) ---- */
 @media (max-width: 768px) {
   .login-float {

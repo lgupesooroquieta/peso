@@ -1,0 +1,244 @@
+/**
+ * Staff Accounts page
+ * Theme-aware table + toolbar (Staff Accounts doesn't import other table page CSS).
+ */
+
+body {
+  background-color: var(--color-bg-body);
+  color: var(--color-text-primary);
+}
+
+/* Toolbar / Controls (same pattern as other pages) */
+.toolbar {
+  background: var(--color-bg-card);
+  padding: 20px;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--color-border-subtle);
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-icon-default);
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  border: 1px solid var(--input-border);
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+.search-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.search-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+/* Table Styles (theme tokens) */
+.table-container {
+  background: var(--table-bg);
+  border-radius: 0 0 12px 12px;
+  border: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+#staffTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+#staffTable thead {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+}
+
+#staffTable th {
+  text-align: left;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#staffTable td {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--table-row-border);
+  vertical-align: middle;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+#staffTable tbody tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+/* Align status column like other list pages */
+#staffTable th:nth-child(4),
+#staffTable td:nth-child(4) {
+  text-align: center;
+}
+
+#staffTable th:nth-child(5),
+#staffTable td:nth-child(5) {
+  text-align: center;
+}
+
+/* User Info Cell */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-chip-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.user-email {
+  color: var(--color-text-muted);
+}
+
+/* Table footer */
+.table-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--table-row-border);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Table skeleton loading (shared look with Users page) */
+@keyframes table-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.table-skeleton-row td {
+  border-bottom: 1px solid var(--table-row-border);
+}
+
+.table-skeleton-cell {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-input) 0%,
+    var(--color-border-subtle) 50%,
+    var(--color-bg-input) 100%
+  );
+  background-size: 200% 100%;
+  animation: table-skeleton-shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+  height: 20px;
+}
+
+[data-theme="dark"] .table-skeleton-cell {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-input) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--color-bg-input) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.table-skeleton-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.table-skeleton-name {
+  width: 150px;
+}
+
+.table-skeleton-email {
+  width: 200px;
+}
+
+.table-skeleton-badge {
+  width: 100px;
+}
+
+.table-skeleton-date {
+  width: 120px;
+}
+
+.table-skeleton-actions {
+  width: 90px;
+  margin-left: auto;
+}
+
+.table-skeleton-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-container.table-loaded .table-skeleton-row {
+  display: none;
+}
+
+/* Approve button disabled state */
+.btn-outline-success:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Staff status badge sizing (make text a bit bigger) */
+#staffTable td:nth-child(4) .badge {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+/* Center page header title/label */
+.page-header {
+  text-align: center;
+}
+
+/* Staff actions column should not wrap content and should look like other tables */
+#staffTable th:nth-child(5),
+#staffTable td:nth-child(5) {
+  white-space: nowrap;
+}

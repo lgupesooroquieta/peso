@@ -34,6 +34,27 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          if (
+            localStorage.getItem("peso-admin-role") === "staff" &&
+            localStorage.getItem("peso-admin-approved") === "1"
+          ) {
+            document.documentElement.setAttribute(
+              "data-hide-staff-accounts",
+              "1",
+            );
+            var s = document.createElement("style");
+            s.textContent =
+              '.sidebar nav a[href="/pages/staff_accounts/staff_accounts.html"]{display:none!important;}';
+            document.head.appendChild(s);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
     <title>Programs | PESO</title>
     <link rel="icon" type="image/png" href="/src/images/peso_seal.png" />
     <link
@@ -138,6 +159,12 @@
                   <a href="/pages/job_applicants/job_applicants.html"
                     ><i class="fas fa-briefcase"></i
                     ><span class="nav-link-text"> Applicants</span></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a href="/pages/staff_accounts/staff_accounts.html"
+                    ><i class="fas fa-user-shield"></i
+                    ><span class="nav-link-text"> Staff Accounts</span></a
                   >
                 </li>
               </ul>
@@ -620,6 +647,53 @@
     </div>
 
     <div
+      id="statusConfirmModal"
+      class="add-job-modal-overlay"
+      aria-hidden="true"
+    >
+      <div class="add-job-modal-box" style="max-width: 420px">
+        <div class="add-job-modal-header">
+          <h2>
+            <i class="fas fa-toggle-on" style="margin-right: 8px"></i>
+            Change Program Status
+          </h2>
+          <button
+            type="button"
+            class="add-job-modal-close"
+            id="statusModalClose"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="add-job-modal-body" style="padding: 16px 20px 18px">
+          <p
+            id="statusConfirmText"
+            style="margin: 0; font-size: 14px; line-height: 1.5"
+          >
+            Are you sure you want to change this program's status?
+          </p>
+          <div
+            class="d-flex gap-2 justify-content-end mt-3"
+            style="margin-top: 14px"
+          >
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="statusCancelBtn"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="statusConfirmBtn">
+              <i class="fas fa-check-circle"></i>
+              <span class="btn-text">Confirm</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
       id="deleteConfirmModal"
       class="add-job-modal-overlay"
       aria-hidden="true"
@@ -659,6 +733,7 @@
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
     <script src="/js/utils/theme.js"></script>
+    <script type="module" src="/js/utils/sidebar-role-visibility.js"></script>
     <script src="/js/utils/sidebar.js"></script>
     <script type="module" src="/js/authentication/logout.js"></script>
     <script src="/js/utils/toast.js"></script>

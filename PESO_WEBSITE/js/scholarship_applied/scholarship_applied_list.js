@@ -13,6 +13,7 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { auth } from "/js/config/firebase.js";
 import { notifyApproval, notifyDecline } from "/js/onesignal/notifications.js";
+import { createApplicationDecisionNotification } from "/js/notifications/notification_store.js";
 
 const PERIOD_LABELS = {
   junior_high_new: "Junior High – New",
@@ -558,10 +559,21 @@ function applyFilters() {
 
 async function ensureAdmin(user) {
   try {
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-    const role = snap.exists() ? snap.data()?.role : null;
-    return role === "admin";
+    // Check users collection (legacy)
+    const usersRef = doc(db, "users", user.uid);
+    const usersSnap = await getDoc(usersRef);
+    const usersRole = usersSnap.exists() ? usersSnap.data()?.role : null;
+    if (usersRole === "admin") return true;
+
+    // Check adminUsers collection (dashboard staff/admin accounts)
+    const adminRef = doc(db, "adminUsers", user.uid);
+    const adminSnap = await getDoc(adminRef);
+    const adminData = adminSnap.exists() ? adminSnap.data() : null;
+    const adminRole = adminData?.role;
+    if (adminRole === "admin") return true;
+    if (adminRole === "staff" && adminData?.isApproved === true) return true;
+
+    return false;
   } catch {
     // If role lookup fails, still attempt fetch; Firestore rules will protect data.
     return true;
@@ -924,6 +936,18 @@ els.tableBody?.addEventListener("click", async (e) => {
         type: "scholarship",
         applicantId: app.id,
       }).catch(() => {});
+      await createApplicationDecisionNotification({
+        userId:
+          app.rawData?.userId ||
+          app.rawData?.uid ||
+          app.rawData?.applicantUserId ||
+          app.rawData?.applicantId ||
+          null,
+        path: app.path,
+        status: statusValue,
+        remarks: "",
+        type: "scholarship",
+      });
     } else {
       notifyDecline({
         applicantName: app.name,
@@ -931,6 +955,18 @@ els.tableBody?.addEventListener("click", async (e) => {
         type: "scholarship",
         applicantId: app.id,
       }).catch(() => {});
+      await createApplicationDecisionNotification({
+        userId:
+          app.rawData?.userId ||
+          app.rawData?.uid ||
+          app.rawData?.applicantUserId ||
+          app.rawData?.applicantId ||
+          null,
+        path: app.path,
+        status: statusValue,
+        remarks: "",
+        type: "scholarship",
+      });
     }
   } catch (err) {
     console.error("Failed to update scholarship status:", err);

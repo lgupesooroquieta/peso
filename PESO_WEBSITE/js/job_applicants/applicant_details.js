@@ -272,10 +272,27 @@ function collapseEmpty() {
   // 1. Service badge
   if (!txt("viewServiceApplied")) hide("sectionServiceType", "empty-block");
 
-  // 2. Disability block — hide if nothing checked and no text
+  // 2. TIN + Disability
+  //    If both are empty → hide the entire left column and switch right panel to row mode.
+  //    If only one is empty → hide just that piece, keep the layout as a column.
+  const hasTin = txt("viewTin");
   const hasDis = on("checkDisVisual") || on("checkDisSpeech") || on("checkDisMental") ||
                  on("checkDisHearing") || on("checkDisPhysical") || on("checkDisOther") || txt("viewDisOther");
+
   if (!hasDis) hide("sectionDisability", "empty-block");
+  if (!hasTin) hide("tinCell", "empty-block");
+
+  // When both left-side items are empty, collapse the left column and
+  // expand Height/Contact/Email into a full-width horizontal row.
+  if (!hasTin && !hasDis) {
+    const leftCol = el("tinDisLeft");
+    const row     = el("tinDisRow");
+    if (leftCol) leftCol.classList.add("empty-col");   // removes left column from flex
+    if (row)     row.classList.add("left-empty");       // triggers row-mode CSS
+    // Also remove inline style that limits last .hce flex
+    const lastHce = el("hceEmail");
+    if (lastHce) lastHce.style.flex = "1";
+  }
 
   // 3. Employment columns
   //    When one column gets empty-col (display:none), the flex sibling fills 100% automatically

@@ -12,20 +12,30 @@ import {
   deleteDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { createApplicationDecisionNotification } from "/js/notifications/notification_store.js";
 
 // --- HELPERS ---
 
 export function normalizeStatus(rawStatus) {
   const s = (rawStatus || "").toString().trim().toLowerCase();
-  if (["approved", "approve", "accepted"].includes(s)) return "Approved";
-  if (["declined", "decline", "rejected", "reject", "denied"].includes(s))
+  if (["accepted", "accept", "passed"].includes(s)) return "Accepted";
+  if (["approved", "approve"].includes(s)) return "Approved";
+  if (["disapproved", "disapprove", "not approved"].includes(s))
+    return "Disapproved";
+  if (
+    ["declined", "decline", "rejected", "reject", "denied", "failed"].includes(
+      s,
+    )
+  )
     return "Declined";
   return "In Progress";
 }
 
 export function statusBadgeClass(statusLabel) {
-  if (statusLabel === "Approved") return "bg-success";
+  if (statusLabel === "Accepted") return "bg-success";
+  if (statusLabel === "Approved") return "bg-primary";
   if (statusLabel === "Declined") return "bg-danger";
+  if (statusLabel === "Disapproved") return "bg-danger";
   return "bg-warning text-dark";
 }
 
@@ -97,6 +107,10 @@ export async function fetchAllApplicants() {
       data.programType || data.jobProgramName || data.jobProgram || "";
     const programType = rawType || "Other";
 
+    // Reference number (for display/search)
+    const referenceNumber =
+      data.spesReferenceNumber || data.referenceNumber || data.reference || "";
+
     applicants.push({
       id: docSnap.id,
       path: docSnap.ref.path,
@@ -104,6 +118,7 @@ export async function fetchAllApplicants() {
       name: fullName,
       email: data.email || "N/A",
       programType,
+      reference: referenceNumber,
       // Applied service text shown in table & modal
       // Include programType as a fallback so it never shows N/A
       serviceApplied:
@@ -189,15 +204,58 @@ export async function fetchUserProfileImage(userId) {
 }
 
 // 3. Update Operations
-export async function updateApplicantStatus(path, status, remarks = null) {
+export async function updateApplicantStatus(
+  path,
+  status,
+  remarks = null,
+  userId = null,
+  reason = null,
+) {
+  const s = (status || "").toString().trim().toLowerCase();
   const updates = {
     applicationStatus: status,
     status: status,
     updatedAt: serverTimestamp(),
   };
-  if (remarks) updates.denialRemarks = remarks;
+  const cleanRemarks =
+    typeof remarks === "string" && remarks.trim().length
+      ? remarks.trim()
+      : null;
+  const cleanReason =
+    typeof reason === "string" && reason.trim().length ? reason.trim() : null;
 
-  await updateDoc(doc(db, ...path.split("/")), updates);
+  if (cleanReason) {
+    updates.decisionReason = cleanReason;
+    if (s === "approved") updates.approvalReason = cleanReason;
+    if (s === "declined") updates.declineReason = cleanReason;
+    if (s === "accepted") updates.acceptReason = cleanReason;
+    if (s === "disapproved") updates.disapproveReason = cleanReason;
+  }
+
+  if (cleanRemarks) {
+    updates.decisionRemarks = cleanRemarks;
+    if (s === "approved") updates.approvalRemarks = cleanRemarks;
+    if (s === "declined") {
+      updates.denialRemarks = cleanRemarks; // legacy field
+      updates.declineRemarks = cleanRemarks;
+    }
+    if (s === "accepted") updates.acceptRemarks = cleanRemarks;
+    if (s === "disapproved") updates.disapproveRemarks = cleanRemarks;
+  }
+
+  const docRef = doc(db, ...path.split("/"));
+  await updateDoc(docRef, updates);
+
+  // Create a per-applicant notification document so only that user
+  // needs to query their own notifications.
+  await createApplicationDecisionNotification({
+    userId,
+    path,
+    status,
+    reason: cleanReason,
+    remarks: cleanRemarks,
+    type: "job",
+  });
 }
 
 export async function deleteApplicant(path) {

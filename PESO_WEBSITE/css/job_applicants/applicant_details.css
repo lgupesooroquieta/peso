@@ -45,11 +45,6 @@ body {
 
 /* ════════ FORM HEADER ════════ */
 .form-header { display: flex; align-items: stretch; border: 1px solid #000; }
-.form-header .nsrp-label {
-  width: 90px; min-width: 90px; border-right: 1px solid #000;
-  padding: 4px 6px; font-size: 9px; font-weight: bold;
-  display: flex; flex-direction: column; justify-content: center;
-}
 .form-header .title-block { flex: 1; text-align: center; padding: 4px 6px; line-height: 1.5; }
 .form-header .title-block .main-title { font-size: 12px; font-weight: bold; text-transform: uppercase; }
 .form-header .title-block .form-title { font-size: 11px; font-weight: bold; }
@@ -104,9 +99,9 @@ body {
 }
 .personal-right .addr-row {
   padding: 2px 5px; border-bottom: 1px solid #000;
-  min-height: 20px; display: flex; align-items: center; gap: 4px;
+  flex: 1; display: flex; align-items: center; gap: 4px;
 }
-.personal-right .addr-row:last-child { border-bottom: none; flex: 1; }
+.personal-right .addr-row:last-child { border-bottom: none; }
 .personal-right .addr-lbl { font-size: 8px; font-weight: bold; min-width: 110px; }
 
 /* ════════ TIN / DISABILITY ROW ════════ */
@@ -191,6 +186,26 @@ input[type="checkbox"] {
 .assessor-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; }
 .assessor-block { text-align: center; }
 .assessor-line { border-bottom: 1px solid #000; min-height: 16px; margin-bottom: 2px; }
+
+/* ════════ TIN/DISABILITY LEFT SIDE EMPTY — ROW MODE ════════
+   JS adds .left-empty to #tinDisRow when both TIN and Disability are absent.
+   The right panel (Height/Contact/Email) expands to full width and lays out
+   its three cells horizontally as a row instead of a narrow column. */
+.tin-dis-row.left-empty { display: block; }
+.tin-dis-row.left-empty .tin-dis-right {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border-left: none;
+}
+.tin-dis-row.left-empty .tin-dis-right .hce {
+  flex: 1;
+  border-bottom: none;
+  border-right: 1px solid #000;
+}
+.tin-dis-row.left-empty .tin-dis-right .hce:last-child {
+  border-right: none;
+}
 
 /* ════════ PRINT ════════ */
 @page { size: 210mm 297mm; margin: 8mm; }

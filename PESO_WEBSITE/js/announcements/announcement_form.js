@@ -214,7 +214,6 @@ async function performAnnouncementFormSubmit() {
         title: data.title || "",
         id,
         isNew: false,
-        targetIntent: data.targetIntent || "both",
       }).catch(() => {});
     } else {
       const ref = await addDoc(collection(db, ANNOUNCEMENTS_COLLECTION), data);
@@ -223,7 +222,6 @@ async function performAnnouncementFormSubmit() {
         title: data.title || "",
         id: ref.id,
         isNew: true,
-        targetIntent: data.targetIntent || "both",
       }).catch(() => {});
     }
 

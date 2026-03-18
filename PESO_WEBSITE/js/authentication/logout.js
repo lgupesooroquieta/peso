@@ -134,10 +134,18 @@ const LOGIN_URL = "/pages/login/login.html";
     function doLogout() {
       signOut(auth)
         .then(() => {
+          try {
+            localStorage.removeItem("peso-admin-role");
+            localStorage.removeItem("peso-admin-approved");
+          } catch (_) {}
           window.location.href = LOGIN_URL;
         })
         .catch((err) => {
           console.error("Logout error:", err);
+          try {
+            localStorage.removeItem("peso-admin-role");
+            localStorage.removeItem("peso-admin-approved");
+          } catch (_) {}
           window.location.href = LOGIN_URL;
         });
     }
