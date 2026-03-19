@@ -61,7 +61,8 @@ function buildPayload({
       { field: "tag", key: "intent", relation: "=", value: "both" },
     ];
   } else {
-    payload.included_segments = ["All Subscribers"];
+    // OneSignal expects built-in segment name "All"
+    payload.included_segments = ["All"];
   }
 
   return payload;
