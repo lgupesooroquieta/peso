@@ -57,7 +57,15 @@ export async function notifyProgramAdded(options) {
  * }} options
  */
 export async function notifyAnnouncementAdded(options) {
-  const { title = "", id, isNew = true, targetIntent = "both" } = options || {};
+  const {
+    title = "",
+    id,
+    isNew = true,
+    targetIntent = "both",
+    category = "",
+    description = "",
+    imageUrl = "",
+  } = options || {};
 
   await sendToBackend({
     event: "announcement_added",
@@ -65,6 +73,9 @@ export async function notifyAnnouncementAdded(options) {
     announcementId: id,
     isNew,
     targetIntent, // backend will use this to filter by OneSignal tag 'intent'
+    category,
+    description,
+    imageUrl,
     message: isNew
       ? `New announcement: ${title}` // Added backticks here
       : `Announcement updated: ${title}`, // Added backticks here

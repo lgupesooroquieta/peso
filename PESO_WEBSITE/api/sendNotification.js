@@ -29,20 +29,22 @@ function buildPayload({
   announcementId,
   targetIntent,
   category,
+  description,
+  imageUrl,
 }) {
   const intent = toStr(targetIntent).trim().toLowerCase();
-  const headings = { en: toStr(category).trim() || "Announcement" };
+  const headings = { en: toStr(category).trim() || "Official Update" };
+  const subtitle = toStr(title).trim();
+  const body = toStr(description).trim() || toStr(message).trim() || subtitle || "You have a new announcement.";
   const contents = {
-    en:
-      toStr(message).trim() ||
-      toStr(title).trim() ||
-      "You have a new announcement.",
+    en: body,
   };
 
   const payload = {
     app_id: appId,
     target_channel: "push",
     headings,
+    ...(subtitle ? { subtitle: { en: subtitle } } : {}),
     contents,
     custom_data: {
       announcementId: toStr(announcementId).trim(),
@@ -52,6 +54,14 @@ function buildPayload({
     android_sound: "notification_sound",
     ios_sound: "notification_sound.wav",
   };
+
+  const img = toStr(imageUrl).trim();
+  if (img) {
+    // Rich notification image (Android)
+    payload.big_picture = img;
+    // Rich notification attachment (iOS)
+    payload.ios_attachments = { id1: img };
+  }
 
   // Target by OneSignal tag "intent" (set by Flutter app on login).
   if (intent && intent !== "both") {
@@ -112,6 +122,8 @@ export default async function handler(req, res) {
       announcementId: body.announcementId,
       targetIntent: body.targetIntent,
       category: body.category,
+      description: body.description,
+      imageUrl: body.imageUrl,
     });
 
     const r = await fetch(ONESIGNAL_CREATE_URL, {
