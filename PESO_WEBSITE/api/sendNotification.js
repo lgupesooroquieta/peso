@@ -51,8 +51,14 @@ function buildPayload({
       targetIntent: intent || "both",
     },
     // Custom sound names (must exist in the mobile app build)
-    android_sound: "notification_sound",
-    ios_sound: "notification_sound.wav",
+    // Android: resource name ONLY (no .wav)
+    android_sound: "notification",
+    // iOS: filename with extension (must be bundled in Runner)
+    ios_sound: "notification.wav",
+
+    // Android 8+ requires using the notification channel that has the sound configured.
+    // This is the Channel ID you created in OneSignal.
+    android_channel_id: "003eb09d-c3e9-4b48-aee6-cb6076aba831",
   };
 
   const img = toStr(imageUrl).trim();
