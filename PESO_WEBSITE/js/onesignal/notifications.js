@@ -128,6 +128,7 @@ export async function notifyApproval(options) {
  *  programName?: string,
  *  type?: 'job'|'scholarship',
  *  applicantId?: string,
+ *  userId?: string,
  *  remarks?: string,
  *  decision?: 'declined'|'disapproved'
  * }} options
@@ -138,6 +139,7 @@ export async function notifyDecline(options) {
     programName = "",
     type = "job",
     applicantId,
+    userId,
     remarks = "",
     decision = "declined",
   } = options || {};
@@ -153,6 +155,7 @@ export async function notifyDecline(options) {
     applicantName,
     programName,
     applicantId,
+    userId: userId || applicantId,
     decision: verb,
     remarks,
     title: `Application ${verb}`,
