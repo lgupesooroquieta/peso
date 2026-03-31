@@ -119,8 +119,7 @@ function buildApplicantPayload({
   if (!uid) return null;
 
   const heading = toStr(title).trim() || "Application update";
-  const body =
-    toStr(message).trim() || "Your application status was updated.";
+  const body = toStr(message).trim() || "Your application status was updated.";
 
   return {
     app_id: appId,
@@ -230,7 +229,10 @@ export default async function handler(req, res) {
         description: body.description,
         imageUrl: body.imageUrl,
       });
-    } else if (event === "applicant_approved" || event === "applicant_declined") {
+    } else if (
+      event === "applicant_approved" ||
+      event === "applicant_declined"
+    ) {
       const userId = toStr(body.userId || body.applicantId).trim();
       if (!userId) {
         res.status(400).json({
@@ -279,7 +281,9 @@ export default async function handler(req, res) {
 
     const text = await r.text();
     if (!r.ok) {
-      res.status(r.status).json({ ok: false, status: r.status, response: text });
+      res
+        .status(r.status)
+        .json({ ok: false, status: r.status, response: text });
       return;
     }
 

@@ -15,6 +15,9 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/fi
 import { auth } from "/js/config/firebase.js";
 import { notifyProgramAdded } from "/js/onesignal/notifications.js";
 
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbjzniu96/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "mobile_upload";
+
 // DOM Elements
 const programsTableBody = document.getElementById("programsTableBody");
 const loadingContainer = document.getElementById("loadingContainer");
@@ -54,6 +57,9 @@ const openAddJobModalBtn = document.getElementById("openAddJobModalBtn");
 const addJobCancelBtn = document.getElementById("addJobCancelBtn");
 const addJobClearBtn = document.getElementById("addJobClearBtn");
 const addJobModalClose = document.getElementById("addJobModalClose");
+const modalRequireApplicantFile = document.getElementById(
+  "modalRequireApplicantFile",
+);
 
 // Image Upload Elements
 const bannerUploadArea = document.getElementById("bannerUploadArea");
@@ -206,6 +212,7 @@ function resetProgramForm() {
   if (bannerUploadArea) bannerUploadArea.classList.remove("has-image");
   if (bannerPreview) bannerPreview.src = "";
   if (modalProgramImage) modalProgramImage.value = "";
+  if (modalRequireApplicantFile) modalRequireApplicantFile.checked = false;
 }
 
 if (openAddJobModalBtn) {
@@ -244,9 +251,16 @@ window.openEditProgramModal = function (program) {
 
   document.getElementById("modalDescription").value = program.description || "";
   document.getElementById("modalContactInfo").value = program.contactInfo || "";
-  document.getElementById("modalDeadline").value = program.deadline || "";
+  // Keep the raw yyyy-mm-dd value for the <input type="date"> element.
+  document.getElementById("modalDeadline").value =
+    program.deadlineInputValue || program.deadlineRaw || "";
   document.getElementById("modalContactPerson").value =
     program.contactPerson || "";
+  if (modalRequireApplicantFile) {
+    modalRequireApplicantFile.checked = Boolean(
+      program.requireApplicantFileUpload,
+    );
+  }
 
   if (program.imageUrl) {
     bannerPreview.src = program.imageUrl;
@@ -337,20 +351,58 @@ async function performProgramSubmit() {
     const customType = document.getElementById("modalCustomProgramType").value;
     const finalType = typeSelect === "Other" ? customType : typeSelect;
 
+    // Upload new image to Cloudinary, otherwise keep existing preview URL.
     let finalImageUrl = null;
-    if (
-      bannerPreview.src &&
-      !bannerPreview.src.includes(window.location.href)
-    ) {
+    const imageFile = modalProgramImage?.files?.[0] || null;
+
+    async function uploadToCloudinary(fileOrBlob, filename) {
+      const formData = new FormData();
+      formData.append("file", fileOrBlob, filename || "program-image");
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const response = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Image upload failed.");
+      }
+
+      const uploadData = await response.json();
+      return uploadData.secure_url || null;
+    }
+
+    if (imageFile) {
+      finalImageUrl = await uploadToCloudinary(
+        imageFile,
+        imageFile.name || "program-image",
+      );
+    } else if (bannerPreview?.src && bannerPreview.src.startsWith("data:")) {
+      // Fallback: upload from preview data URL if file input isn't available.
+      const res = await fetch(bannerPreview.src);
+      const blob = await res.blob();
+      finalImageUrl = await uploadToCloudinary(blob, "program-image");
+    } else if (bannerPreview?.src && bannerPreview.src.startsWith("http")) {
+      // Existing Cloudinary URL (set when editing).
       finalImageUrl = bannerPreview.src;
     }
+
+    const rawDeadlineInputValue =
+      document.getElementById("modalDeadline")?.value || "";
+    const deadlineForFirestore = formatDeadlineForFirestore(
+      rawDeadlineInputValue,
+    );
 
     const programData = {
       programType: finalType,
       description: document.getElementById("modalDescription").value,
       contactInfo: document.getElementById("modalContactInfo").value,
-      deadline: document.getElementById("modalDeadline").value,
+      deadline: deadlineForFirestore,
       contactPerson: document.getElementById("modalContactPerson").value,
+      requireApplicantFileUpload: Boolean(
+        modalRequireApplicantFile && modalRequireApplicantFile.checked,
+      ),
       jobProgramImage: finalImageUrl,
       status: "active",
     };
@@ -419,11 +471,12 @@ if (addJobForm) {
 function getStatusFromDeadline(deadlineValue, existingStatus = "active") {
   const normalizedStatus = (existingStatus || "").toString().toLowerCase();
 
-  if (normalizedStatus === "active" || normalizedStatus === "closed") {
+  // Always respect a manually closed program
+  if (normalizedStatus === "closed") {
     return {
-      key: normalizedStatus,
-      label: normalizedStatus === "active" ? "Active" : "Closed",
-      badgeClass: normalizedStatus === "active" ? "badge-green" : "badge-red",
+      key: "closed",
+      label: "Closed",
+      badgeClass: "badge-red",
     };
   }
 
@@ -432,12 +485,12 @@ function getStatusFromDeadline(deadlineValue, existingStatus = "active") {
 
   if (!deadlineValue) {
     return {
-      key: existingStatus || "active",
+      key: normalizedStatus || "active",
       label:
-        (existingStatus || "active").charAt(0).toUpperCase() +
-        (existingStatus || "active").slice(1).toLowerCase(),
+        (normalizedStatus || "active").charAt(0).toUpperCase() +
+        (normalizedStatus || "active").slice(1).toLowerCase(),
       badgeClass:
-        (existingStatus || "active").toLowerCase() === "closed"
+        (normalizedStatus || "active").toLowerCase() === "closed"
           ? "badge-red"
           : "badge-green",
     };
@@ -448,7 +501,17 @@ function getStatusFromDeadline(deadlineValue, existingStatus = "active") {
     if (deadlineValue.toDate) {
       deadlineDate = deadlineValue.toDate();
     } else {
-      deadlineDate = new Date(deadlineValue);
+      // If stored as <input type="date"> value (yyyy-mm-dd), parse as local date
+      // to avoid UTC timezone shifts.
+      if (
+        typeof deadlineValue === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(deadlineValue)
+      ) {
+        const [y, m, d] = deadlineValue.split("-").map((x) => parseInt(x, 10));
+        deadlineDate = new Date(y, m - 1, d);
+      } else {
+        deadlineDate = new Date(deadlineValue);
+      }
     }
   } catch {
     deadlineDate = null;
@@ -456,12 +519,12 @@ function getStatusFromDeadline(deadlineValue, existingStatus = "active") {
 
   if (!deadlineDate || Number.isNaN(deadlineDate.getTime())) {
     return {
-      key: existingStatus || "active",
+      key: normalizedStatus || "active",
       label:
-        (existingStatus || "active").charAt(0).toUpperCase() +
-        (existingStatus || "active").slice(1).toLowerCase(),
+        (normalizedStatus || "active").charAt(0).toUpperCase() +
+        (normalizedStatus || "active").slice(1).toLowerCase(),
       badgeClass:
-        (existingStatus || "active").toLowerCase() === "closed"
+        (normalizedStatus || "active").toLowerCase() === "closed"
           ? "badge-red"
           : "badge-green",
     };
@@ -482,6 +545,92 @@ function getStatusFromDeadline(deadlineValue, existingStatus = "active") {
     label: "Active",
     badgeClass: "badge-green",
   };
+}
+
+function formatDeadlineDisplay(deadlineValue) {
+  if (!deadlineValue) return "";
+  if (deadlineValue === "No deadline") return "No deadline";
+
+  try {
+    // If stored as yyyy-mm-dd, parse as local date for correct formatting.
+    if (
+      typeof deadlineValue === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(deadlineValue)
+    ) {
+      const [y, m, d] = deadlineValue.split("-").map((x) => parseInt(x, 10));
+      const dt = new Date(y, m - 1, d);
+      if (!Number.isNaN(dt.getTime())) {
+        return dt.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+    }
+
+    // Fallback for legacy formats like "February 2, 2026"
+    const dt = new Date(deadlineValue);
+    if (Number.isNaN(dt.getTime())) return String(deadlineValue);
+    return dt.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return String(deadlineValue);
+  }
+}
+
+function formatDeadlineForFirestore(deadlineInputValue) {
+  // Convert yyyy-mm-dd from <input type="date"> to "March 31 2026"
+  if (!deadlineInputValue) return "";
+  if (deadlineInputValue === "No deadline") return "";
+
+  if (
+    typeof deadlineInputValue === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(deadlineInputValue)
+  ) {
+    const [y, m, d] = deadlineInputValue.split("-").map((x) => parseInt(x, 10));
+    const dt = new Date(y, m - 1, d);
+    if (Number.isNaN(dt.getTime())) return String(deadlineInputValue);
+
+    // en-US typically returns "March 31, 2026" (with comma). Remove comma to match user request.
+    return dt
+      .toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+      .replace(",", "")
+      .trim();
+  }
+
+  return String(deadlineInputValue);
+}
+
+function toYYYYMMDDLocal(dateObj) {
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function parseStoredDeadlineToInputValue(deadlineValue) {
+  if (!deadlineValue) return "";
+  if (deadlineValue === "No deadline") return "";
+
+  // If already in yyyy-mm-dd format, keep as is.
+  if (
+    typeof deadlineValue === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(deadlineValue)
+  ) {
+    return deadlineValue;
+  }
+
+  // Otherwise try parsing "March 31 2026" (or other browser-parseable formats).
+  const dt = new Date(deadlineValue);
+  if (Number.isNaN(dt.getTime())) return "";
+  return toYYYYMMDDLocal(dt);
 }
 
 async function fetchPrograms(skipLoadingOverlay = false) {
@@ -528,15 +677,31 @@ async function fetchPrograms(skipLoadingOverlay = false) {
         data.status || "active",
       );
 
+      // Persist automatic status changes (e.g., close after deadline)
+      if ((data.status || "active") !== statusInfo.key) {
+        updateDoc(doc(db, "jobPrograms", snapshotDoc.id), {
+          status: statusInfo.key,
+        }).catch(() => {});
+      }
+
       const applicantCount = applicantsCountMap[data.programType] || 0;
+
+      const deadlineRaw = data.deadline || "";
+      const deadlineDisplay = deadlineRaw
+        ? formatDeadlineDisplay(deadlineRaw)
+        : "No deadline";
+      const deadlineInputValue = parseStoredDeadlineToInputValue(deadlineRaw);
 
       allProgramsData.push({
         id: snapshotDoc.id,
         programType: data.programType || "N/A",
         description: data.description || "No description",
-        deadline: data.deadline || "No deadline",
+        deadline: deadlineDisplay,
+        deadlineRaw,
+        deadlineInputValue,
         contactInfo: data.contactInfo || "N/A",
         contactPerson: data.contactPerson || null,
+        requireApplicantFileUpload: Boolean(data.requireApplicantFileUpload),
         status: statusInfo.key,
         statusLabel: statusInfo.label,
         statusBadgeClass: statusInfo.badgeClass,
@@ -1185,6 +1350,9 @@ function openViewProgramModal(program) {
     : "0";
   const contactInfo = program.contactInfo || "—";
   const contactPerson = program.contactPerson || "—";
+  const requireFileLabel = program.requireApplicantFileUpload
+    ? "Required"
+    : "Not required";
   const deadlineLabel =
     deadline && deadline !== "No deadline" ? deadline : "Not specified";
   const typeLabel = program.programType || "Other";
@@ -1272,6 +1440,18 @@ function openViewProgramModal(program) {
               <div class="pvm-info-text">
                 <span class="pvm-card-label">Application Deadline</span>
                 <span class="pvm-card-value">${escapeHtml(deadlineLabel)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pvm-info-row">
+            <div class="pvm-info-card">
+              <div class="pvm-info-icon">
+                <i class="fas fa-file-upload"></i>
+              </div>
+              <div class="pvm-info-text">
+                <span class="pvm-card-label">Applicant File Upload</span>
+                <span class="pvm-card-value">${escapeHtml(requireFileLabel)}</span>
               </div>
             </div>
           </div>

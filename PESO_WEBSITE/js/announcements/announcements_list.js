@@ -1033,10 +1033,6 @@ async function performAnnouncementSubmit() {
         title: data.title || "",
         id,
         isNew: false,
-        targetIntent: data.targetIntent || "both",
-        category: data.category || "",
-        description: data.description || "",
-        imageUrl: data.imageUrl || "",
       }).catch(() => {});
     } else {
       const ref = await addDoc(collection(db, ANNOUNCEMENTS_COLLECTION), data);
@@ -1046,10 +1042,6 @@ async function performAnnouncementSubmit() {
         title: data.title || "",
         id: ref.id,
         isNew: true,
-        targetIntent: data.targetIntent || "both",
-        category: data.category || "",
-        description: data.description || "",
-        imageUrl: data.imageUrl || "",
       }).catch(() => {});
     }
 

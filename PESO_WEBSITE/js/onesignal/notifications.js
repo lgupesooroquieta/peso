@@ -18,14 +18,24 @@ async function sendToBackend(payload) {
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
+      const errText = await res.text().catch(() => "");
       console.warn(
         "[OneSignal] Backend returned",
         res.status,
-        await res.text(),
+        errText,
       );
+      if (typeof window.showToast === "function") {
+        window.showToast(
+          `OneSignal push failed (${res.status})`,
+          "error",
+        );
+      }
     }
   } catch (err) {
     console.warn("[OneSignal] Send failed:", err);
+    if (typeof window.showToast === "function") {
+      window.showToast("OneSignal push failed (network error)", "error");
+    }
   }
 }
 
@@ -128,7 +138,6 @@ export async function notifyApproval(options) {
  *  programName?: string,
  *  type?: 'job'|'scholarship',
  *  applicantId?: string,
- *  userId?: string,
  *  remarks?: string,
  *  decision?: 'declined'|'disapproved'
  * }} options

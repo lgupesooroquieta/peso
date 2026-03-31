@@ -417,6 +417,20 @@
             Program
           </h2>
           <div class="add-job-modal-header-actions">
+            <div class="header-file-toggle-wrap">
+              <label
+                class="form-check form-switch header-file-toggle"
+                for="modalRequireApplicantFile"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="modalRequireApplicantFile"
+                />
+                <span class="form-check-label">Require file</span>
+              </label>
+            </div>
             <button
               type="button"
               class="add-job-modal-clear-btn"
@@ -736,6 +750,7 @@
     <script type="module" src="/js/utils/sidebar-role-visibility.js"></script>
     <script src="/js/utils/sidebar.js"></script>
     <script type="module" src="/js/authentication/logout.js"></script>
+    <script type="module" src="/js/utils/topbar-notifications.js"></script>
     <script src="/js/utils/toast.js"></script>
     <script src="/js/utils/loading.js"></script>
     <script type="module" src="/js/programs/programs.js"></script>

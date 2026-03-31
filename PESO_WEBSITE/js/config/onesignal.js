@@ -24,7 +24,6 @@ export const OneSignalConfig = {
    * "Create Notification" API. Leave empty to skip sending (e.g. until backend is ready).
    * Example: "https://your-project.cloudfunctions.net/sendNotification"
    */
-  // Use same-origin serverless endpoint (Vercel): /api/sendNotification
   notificationBackendUrl: "/api/sendNotification",
 
   /** Optional: subdomain for OneSignal (required only for HTTP / custom setup) */

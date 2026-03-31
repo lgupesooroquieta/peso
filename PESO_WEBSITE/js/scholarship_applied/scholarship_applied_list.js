@@ -929,23 +929,20 @@ els.tableBody?.addEventListener("click", async (e) => {
         50,
       );
     }
-    const firebaseUid =
-      app.rawData?.userId ||
-      app.rawData?.uid ||
-      app.rawData?.applicantUserId ||
-      app.rawData?.applicantId ||
-      null;
-
     if (nextStatus === "Accepted") {
       notifyApproval({
         applicantName: app.name,
         programName: app.scholarshipTypeLabel,
         type: "scholarship",
         applicantId: app.id,
-        userId: firebaseUid,
       }).catch(() => {});
       await createApplicationDecisionNotification({
-        userId: firebaseUid,
+        userId:
+          app.rawData?.userId ||
+          app.rawData?.uid ||
+          app.rawData?.applicantUserId ||
+          app.rawData?.applicantId ||
+          null,
         path: app.path,
         status: statusValue,
         remarks: "",
@@ -957,10 +954,14 @@ els.tableBody?.addEventListener("click", async (e) => {
         programName: app.scholarshipTypeLabel,
         type: "scholarship",
         applicantId: app.id,
-        userId: firebaseUid,
       }).catch(() => {});
       await createApplicationDecisionNotification({
-        userId: firebaseUid,
+        userId:
+          app.rawData?.userId ||
+          app.rawData?.uid ||
+          app.rawData?.applicantUserId ||
+          app.rawData?.applicantId ||
+          null,
         path: app.path,
         status: statusValue,
         remarks: "",

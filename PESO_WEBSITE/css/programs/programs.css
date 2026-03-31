@@ -620,6 +620,32 @@ body {
   gap: 8px;
 }
 
+.header-file-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.header-file-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.header-file-toggle .form-check-input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.header-file-toggle .form-check-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+  user-select: none;
+}
+
 .add-job-modal-clear-btn {
   border: 1px solid var(--border-color);
   background: var(--card-bg);
@@ -772,6 +798,37 @@ body {
 .add-job-modal .form-group textarea:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 1px var(--color-accent-soft, rgba(59, 130, 246, 0.3));
+}
+
+/* Keep Bootstrap switch styling intact inside Add/Edit Program modal */
+.add-job-modal .form-group .form-check-input[type="checkbox"] {
+  width: 2.5em;
+  min-width: 2.5em;
+  height: 1.4em;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: #d1d5db;
+  cursor: pointer;
+}
+
+.add-job-modal .form-group .form-check-input[type="checkbox"]:checked {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.header-file-toggle .form-check-input[type="checkbox"] {
+  width: 2.5em;
+  min-width: 2.5em;
+  height: 1.4em;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: #d1d5db;
+}
+
+.header-file-toggle .form-check-input[type="checkbox"]:checked {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .add-job-modal .form-row {

@@ -1067,13 +1067,24 @@ body {
   background: var(--input-border) !important;
 }
 .delete-confirm-actions .btn-danger {
-  background: var(--badge-danger-bg) !important;
-  color: var(--badge-danger-text) !important;
-  border: 1px solid var(--badge-danger-text) !important;
+  /* Force a true red confirm button for the announcement delete modal */
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: 1px solid #ef4444 !important;
 }
 .delete-confirm-actions .btn-danger:hover {
-  background: var(--badge-danger-text) !important;
-  color: var(--card-bg) !important;
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .delete-confirm-actions .btn-danger {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: 1px solid #ef4444 !important;
+}
+[data-theme="dark"] .delete-confirm-actions .btn-danger:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
 }
 
 /* Responsive Mobile */
@@ -1179,7 +1190,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex: 1; 
+  flex: 1;
   min-height: 0;
 }
 
@@ -1252,11 +1263,11 @@ body {
   width: 6px;
 }
 .avm-body::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
   border-radius: 4px;
 }
 .avm-body::-webkit-scrollbar-thumb {
-  background-color: #374151; 
+  background-color: #374151;
   border-radius: 4px;
 }
 .avm-body::-webkit-scrollbar-thumb:hover {
@@ -1353,7 +1364,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: #1e293b; 
+  background: #1e293b;
   color: #f8fafc;
   border-radius: 20px;
   font-size: 13px;
@@ -1366,7 +1377,7 @@ body {
 }
 
 [data-theme="light"] .avm-badge {
-  background: #1e293b; 
+  background: #1e293b;
   color: #ffffff;
 }
 
@@ -1429,7 +1440,7 @@ body {
 
 /* Right Panel */
 .avm-right-panel {
-  padding: 26px 30px 26px 30px; 
+  padding: 26px 30px 26px 30px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -1532,7 +1543,7 @@ body {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .avm-body {
-    display: flex; 
+    display: flex;
     flex-direction: column;
   }
   .avm-left-panel {

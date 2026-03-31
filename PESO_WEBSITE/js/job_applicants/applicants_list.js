@@ -129,9 +129,7 @@ function setApproveModalMode(mode) {
   const firstRadio = modal.querySelector('input[name="approveReason"]');
   if (firstRadio) {
     const isAccept = mode === "accept";
-    const labelText = isAccept
-      ? "Passed the exam"
-      : "Visit our office personally";
+    const labelText = isAccept ? "Application accepted" : "Passed the exam";
     firstRadio.value = labelText;
     const lbl = firstRadio.closest("label");
     if (lbl) lbl.lastChild.textContent = labelText;
@@ -398,12 +396,21 @@ function renderTable() {
       let decisionHtml = "";
 
       if (
-        status === "Accepted" ||
+        status === "Approved" ||
         status === "Declined" ||
         status === "Disapproved"
       ) {
         decisionHtml = "";
-      } else if (isSpes && status === "Approved") {
+      } else if (isSpes && status === "Accepted") {
+        decisionHtml = `
+            <button class="actions-dropdown-item js-approve" data-action="approve" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-check"></i> Approve</button>
+            <button class="actions-dropdown-item js-decline" data-action="decline" data-ref="${encodeURIComponent(
+              app.path,
+            )}"><i class="fas fa-times"></i> Decline</button>
+        `;
+      } else if (isSpes && status === "In Progress") {
         decisionHtml = `
             <button class="actions-dropdown-item js-approve" data-action="accept" data-ref="${encodeURIComponent(
               app.path,
@@ -411,15 +418,6 @@ function renderTable() {
             <button class="actions-dropdown-item js-decline" data-action="decline" data-ref="${encodeURIComponent(
               app.path,
             )}"><i class="fas fa-times"></i> Decline</button>
-        `;
-      } else if (isSpes && status === "In Progress") {
-        decisionHtml = `
-            <button class="actions-dropdown-item js-approve" data-action="approve" data-ref="${encodeURIComponent(
-              app.path,
-            )}"><i class="fas fa-check"></i> Approve</button>
-            <button class="actions-dropdown-item js-decline" data-action="disapprove" data-ref="${encodeURIComponent(
-              app.path,
-            )}"><i class="fas fa-times"></i> Disapprove</button>
         `;
       } else {
         decisionHtml = `
