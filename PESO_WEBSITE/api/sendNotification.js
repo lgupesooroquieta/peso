@@ -25,7 +25,8 @@
  *   "title": "...",
  *   "message": "...",
  *   "programName": "...",
- *   "decision": "approved"|"declined"|...
+ *   "decision": "approved"|"declined"|...,
+ *   "remarks": "optional admin reason (shown in body, subtitle, custom_data)"
  * }
  *
  * New program (segment by intent tag):
@@ -114,29 +115,44 @@ function buildApplicantPayload({
   event,
   decision,
   programName,
+  remarks,
 }) {
   const uid = toStr(userId).trim();
   if (!uid) return null;
 
   const heading = toStr(title).trim() || "Application update";
   const body = toStr(message).trim() || "Your application status was updated.";
+  const reasonText = toStr(remarks).trim();
+  const subtitleText =
+    reasonText.length > 180
+      ? `${reasonText.slice(0, 177)}…`
+      : reasonText;
 
-  return {
+  const custom_data = {
+    event: toStr(event).trim(),
+    type: toStr(type).trim().toLowerCase(),
+    decision: toStr(decision).trim(),
+    programName: toStr(programName).trim(),
+  };
+  if (reasonText) custom_data.remarks = reasonText;
+
+  const payload = {
     app_id: appId,
     target_channel: "push",
     headings: { en: heading },
     contents: { en: body },
     include_external_user_ids: [uid],
-    custom_data: {
-      event: toStr(event).trim(),
-      type: toStr(type).trim().toLowerCase(),
-      decision: toStr(decision).trim(),
-      programName: toStr(programName).trim(),
-    },
+    custom_data,
     android_sound: "notification",
     ios_sound: "notification.wav",
     android_channel_id: "003eb09d-c3e9-4b48-aee6-cb6076aba831",
   };
+
+  if (subtitleText) {
+    payload.subtitle = { en: `Reason: ${subtitleText}` };
+  }
+
+  return payload;
 }
 
 function buildProgramAddedPayload({
