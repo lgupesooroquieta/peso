@@ -13,6 +13,7 @@ import {
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createApplicationDecisionNotification } from "/js/notifications/notification_store.js";
+import { resolveApplicantFirebaseUid } from "/js/onesignal/notifications.js";
 
 // --- HELPERS ---
 
@@ -248,8 +249,14 @@ export async function updateApplicantStatus(
 
   // Create a per-applicant notification document so only that user
   // needs to query their own notifications.
+  const resolvedUserId =
+    resolveApplicantFirebaseUid({
+      applicantId: userId,
+      firestorePath: path,
+    }) || null;
+
   await createApplicationDecisionNotification({
-    userId,
+    userId: resolvedUserId,
     path,
     status,
     reason: cleanReason,

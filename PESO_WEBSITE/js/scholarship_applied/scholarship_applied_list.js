@@ -12,7 +12,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { auth } from "/js/config/firebase.js";
-import { notifyApproval, notifyDecline } from "/js/onesignal/notifications.js";
+import {
+  notifyApproval,
+  notifyDecline,
+  resolveApplicantFirebaseUid,
+} from "/js/onesignal/notifications.js";
 import { createApplicationDecisionNotification } from "/js/notifications/notification_store.js";
 
 const PERIOD_LABELS = {
@@ -929,20 +933,24 @@ els.tableBody?.addEventListener("click", async (e) => {
         50,
       );
     }
+
+    const scholarFirebaseUid = resolveApplicantFirebaseUid({
+      raw: app.rawData,
+      firestorePath: app.path,
+    });
+
     if (nextStatus === "Accepted") {
       notifyApproval({
         applicantName: app.name,
         programName: app.scholarshipTypeLabel,
         type: "scholarship",
-        applicantId: app.id,
+        raw: app.rawData,
+        firestorePath: app.path,
+        decision: statusValue,
+        remarks: "",
       }).catch(() => {});
       await createApplicationDecisionNotification({
-        userId:
-          app.rawData?.userId ||
-          app.rawData?.uid ||
-          app.rawData?.applicantUserId ||
-          app.rawData?.applicantId ||
-          null,
+        userId: scholarFirebaseUid || null,
         path: app.path,
         status: statusValue,
         remarks: "",
@@ -953,15 +961,13 @@ els.tableBody?.addEventListener("click", async (e) => {
         applicantName: app.name,
         programName: app.scholarshipTypeLabel,
         type: "scholarship",
-        applicantId: app.id,
+        raw: app.rawData,
+        firestorePath: app.path,
+        decision: statusValue,
+        remarks: "",
       }).catch(() => {});
       await createApplicationDecisionNotification({
-        userId:
-          app.rawData?.userId ||
-          app.rawData?.uid ||
-          app.rawData?.applicantUserId ||
-          app.rawData?.applicantId ||
-          null,
+        userId: scholarFirebaseUid || null,
         path: app.path,
         status: statusValue,
         remarks: "",

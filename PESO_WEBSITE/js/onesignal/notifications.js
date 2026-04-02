@@ -9,6 +9,31 @@ import { OneSignalConfig } from "/js/config/onesignal.js";
 
 const { enabled, notificationBackendUrl } = OneSignalConfig;
 
+function toStr(v) {
+  return typeof v === "string" ? v : v == null ? "" : String(v);
+}
+
+/**
+ * OneSignal external user id must match Flutter: OneSignal.login(firebaseAuthUid).
+ * JobApplied / ScholarshipApplied docs from the mobile app often omit a userId field;
+ * the Firebase UID is still in the path: users/{uid}/JobApplied/... or .../ScholarshipApplied/...
+ */
+export function resolveApplicantFirebaseUid(options) {
+  const { applicantId, userId, raw, firestorePath } = options || {};
+  const direct = toStr(userId || applicantId).trim();
+  if (direct) return direct;
+  const r = raw || {};
+  const fromRaw = toStr(
+    r.userId || r.uid || r.applicantUserId || r.applicantId,
+  ).trim();
+  if (fromRaw) return fromRaw;
+  const p = toStr(firestorePath)
+    .trim()
+    .replace(/\\/g, "/");
+  const m = p.match(/^users\/([^/]+)\/(?:JobApplied|ScholarshipApplied)\//);
+  return m ? m[1] : "";
+}
+
 async function sendToBackend(payload) {
   if (!enabled || !notificationBackendUrl || !payload) return;
   try {
@@ -99,6 +124,9 @@ export async function notifyAnnouncementAdded(options) {
  *  programName?: string,
  *  type?: 'job'|'scholarship',
  *  applicantId?: string,
+ *  userId?: string,
+ *  raw?: Record<string, unknown>,
+ *  firestorePath?: string,
  *  decision?: 'approved'|'accepted',
  *  remarks?: string
  * }} options
@@ -109,9 +137,25 @@ export async function notifyApproval(options) {
     programName = "",
     type = "job",
     applicantId,
+    userId,
+    raw,
+    firestorePath,
     decision = "approved",
     remarks = "",
   } = options || {};
+
+  const uid = resolveApplicantFirebaseUid({
+    applicantId,
+    userId,
+    raw,
+    firestorePath,
+  });
+  if (!uid) {
+    console.warn(
+      "[OneSignal] Skipping approval push: could not resolve Firebase UID (set userId on application docs or use users/{uid}/JobApplied|ScholarshipApplied path).",
+    );
+    return;
+  }
 
   const d = (decision || "approved").toString().trim().toLowerCase();
   const verb = d === "accepted" ? "accepted" : "approved";
@@ -123,7 +167,8 @@ export async function notifyApproval(options) {
     type,
     applicantName,
     programName,
-    applicantId,
+    applicantId: uid,
+    userId: uid,
     decision: verb,
     remarks,
     title: `Application ${verb}`,
@@ -138,6 +183,9 @@ export async function notifyApproval(options) {
  *  programName?: string,
  *  type?: 'job'|'scholarship',
  *  applicantId?: string,
+ *  userId?: string,
+ *  raw?: Record<string, unknown>,
+ *  firestorePath?: string,
  *  remarks?: string,
  *  decision?: 'declined'|'disapproved'
  * }} options
@@ -149,9 +197,24 @@ export async function notifyDecline(options) {
     type = "job",
     applicantId,
     userId,
+    raw,
+    firestorePath,
     remarks = "",
     decision = "declined",
   } = options || {};
+
+  const uid = resolveApplicantFirebaseUid({
+    applicantId,
+    userId,
+    raw,
+    firestorePath,
+  });
+  if (!uid) {
+    console.warn(
+      "[OneSignal] Skipping decline push: could not resolve Firebase UID (set userId on application docs or use users/{uid}/JobApplied|ScholarshipApplied path).",
+    );
+    return;
+  }
 
   const d = (decision || "declined").toString().trim().toLowerCase();
   const verb = d === "disapproved" ? "disapproved" : "declined";
@@ -163,8 +226,8 @@ export async function notifyDecline(options) {
     type,
     applicantName,
     programName,
-    applicantId,
-    userId: userId || applicantId,
+    applicantId: uid,
+    userId: uid,
     decision: verb,
     remarks,
     title: `Application ${verb}`,
@@ -177,4 +240,5 @@ export default {
   notifyAnnouncementAdded,
   notifyApproval,
   notifyDecline,
+  resolveApplicantFirebaseUid,
 };

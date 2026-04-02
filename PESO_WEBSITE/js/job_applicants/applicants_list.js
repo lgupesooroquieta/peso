@@ -916,6 +916,8 @@ UI.approveModal.confirmBtn?.addEventListener("click", async () => {
         programName: item.programType,
         type: "job",
         applicantId: userId,
+        raw: item?.raw,
+        firestorePath: path,
         decision: statusToSet,
         remarks: notifyRemarks,
       }).catch(() => {});
@@ -988,6 +990,8 @@ UI.declineModal.confirmBtn?.addEventListener("click", async () => {
         type: "job",
         remarks: notifyRemarks,
         applicantId: userId,
+        raw: item?.raw,
+        firestorePath: path,
         decision: statusToSet,
       }).catch(() => {});
     }
