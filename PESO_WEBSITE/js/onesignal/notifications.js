@@ -159,8 +159,14 @@ export async function notifyApproval(options) {
 
   const d = (decision || "approved").toString().trim().toLowerCase();
   const verb = d === "accepted" ? "accepted" : "approved";
+  const decisionLabel = verb.length > 0
+    ? verb[0].toUpperCase() + verb.slice(1)
+    : verb;
   const programPart = programName ? ` for ${programName}` : "";
-  const reasonPart = remarks ? ` Reason: ${remarks}` : "";
+  const note = toStr(remarks).trim();
+  // Keep the "reason" out of the main body; send it via subtitle (Reason: ...)
+  // so the push design doesn't duplicate the remarks.
+  const message = `Your application${programPart} has been ${decisionLabel}.`;
 
   await sendToBackend({
     event: "applicant_approved",
@@ -170,9 +176,9 @@ export async function notifyApproval(options) {
     applicantId: uid,
     userId: uid,
     decision: verb,
-    remarks,
-    title: `Application ${verb}`,
-    message: `Your application${programPart} has been ${verb}.${reasonPart}`,
+    remarks: note,
+    title: `Application ${decisionLabel}`,
+    message,
   });
 }
 
@@ -218,8 +224,14 @@ export async function notifyDecline(options) {
 
   const d = (decision || "declined").toString().trim().toLowerCase();
   const verb = d === "disapproved" ? "disapproved" : "declined";
+  const decisionLabel = verb.length > 0
+    ? verb[0].toUpperCase() + verb.slice(1)
+    : verb;
   const programPart = programName ? ` for ${programName}` : "";
-  const reasonPart = remarks ? ` Reason: ${remarks}` : "";
+  const note = toStr(remarks).trim();
+  // Keep the "reason" out of the main body; send it via subtitle (Reason: ...)
+  // so the push design doesn't duplicate the remarks.
+  const message = `Your application${programPart} has been ${decisionLabel}.`;
 
   await sendToBackend({
     event: "applicant_declined",
@@ -229,9 +241,9 @@ export async function notifyDecline(options) {
     applicantId: uid,
     userId: uid,
     decision: verb,
-    remarks,
-    title: `Application ${verb}`,
-    message: `Your application${programPart} has been ${verb}.${reasonPart}`,
+    remarks: note,
+    title: `Application ${decisionLabel}`,
+    message,
   });
 }
 
